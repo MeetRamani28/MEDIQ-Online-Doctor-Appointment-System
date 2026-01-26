@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const upload = require("../config/multer-config");
+const authMiddleware = require("../middlewares/authMiddlewares");
 
 const {
   getDoctorDashboard,
@@ -7,28 +9,23 @@ const {
   getDoctorProfile,
   updateDoctorProfile,
 } = require("../controllers/doctorController");
-const upload = require("../config/multer-config");
+
 const {
   getDoctorAppointments,
 } = require("../controllers/appointmentController");
 
-const authMiddleware = require("../middlewares/authMiddlewares");
-
 router.get("/dashboard", authMiddleware("DOCTOR"), getDoctorDashboard);
 
-// Profile
 router.get("/profile", authMiddleware("DOCTOR"), getDoctorProfile);
 router.put(
   "/profile",
-  upload.single("profileImage"),
   authMiddleware("DOCTOR"),
+  upload.single("profileImage"),
   updateDoctorProfile
 );
 
-// Appointments
 router.get("/appointments", authMiddleware("DOCTOR"), getDoctorAppointments);
 
-// Medical Records
 router.get(
   "/medical-records",
   authMiddleware("DOCTOR"),

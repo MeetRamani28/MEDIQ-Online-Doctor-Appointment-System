@@ -1,16 +1,18 @@
 const express = require("express");
 const router = express.Router();
+const authMiddleware = require("../middlewares/authMiddlewares");
+
 const {
   getAllSpecializations,
   getDoctorsBySpecialization,
   getMyMedicalRecords,
 } = require("../controllers/userController");
+
 const {
   createAppointment,
   getMyAppointments,
   cancelAppointment,
 } = require("../controllers/appointmentController");
-const authMiddleware = require("../middlewares/authMiddlewares");
 
 router.get(
   "/specializations",

@@ -4,34 +4,34 @@ const User = require("../model/user-model");
 const getDoctorDashboard = async (req, res) => {
   try {
     const doctorId = req.user._id;
+
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
     const todayEnd = new Date();
     todayEnd.setHours(23, 59, 59, 999);
 
-    const totalAppointments = await Appointment.countDocuments({
-      doctor: doctorId,
-    });
-    const upcomingAppointments = await Appointment.countDocuments({
-      doctor: doctorId,
-      status: "PENDING",
-      appointmentDate: { $gte: new Date() },
-    });
-    const completedAppointments = await Appointment.countDocuments({
-      doctor: doctorId,
-      status: "COMPLETED",
-    });
-    const cancelledAppointments = await Appointment.countDocuments({
-      doctor: doctorId,
-      status: "CANCELLED",
-    });
-
-    const todayAppointments = await Appointment.find({
-      doctor: doctorId,
-      appointmentDate: { $gte: todayStart, $lte: todayEnd },
-    })
-      .populate("user", "fullName email")
-      .sort({ appointmentTime: 1 });
+    const [
+      totalAppointments,
+      upcomingAppointments,
+      completedAppointments,
+      cancelledAppointments,
+      todayAppointments,
+    ] = await Promise.all([
+      Appointment.countDocuments({ doctor: doctorId }),
+      Appointment.countDocuments({
+        doctor: doctorId,
+        status: "PENDING",
+        appointmentDate: { $gte: new Date() },
+      }),
+      Appointment.countDocuments({ doctor: doctorId, status: "COMPLETED" }),
+      Appointment.countDocuments({ doctor: doctorId, status: "CANCELLED" }),
+      Appointment.find({
+        doctor: doctorId,
+        appointmentDate: { $gte: todayStart, $lte: todayEnd },
+      })
+        .populate("user", "fullName email")
+        .sort({ appointmentTime: 1 }),
+    ]);
 
     res.status(200).json({
       success: true,
@@ -59,6 +59,7 @@ const getDoctorMedicalRecords = async (req, res) => {
       .populate("user", "fullName email")
       .populate("medicalRecord")
       .sort({ updatedAt: -1 });
+
     res.status(200).json({ success: true, count: records.length, records });
   } catch (error) {
     console.error("Doctor Medical Records Error:", error);
@@ -71,6 +72,7 @@ const getDoctorProfile = async (req, res) => {
     const doctor = await User.findById(req.user._id)
       .select("-password")
       .populate("doctorProfile.specialization");
+
     res.status(200).json({ success: true, doctor });
   } catch (error) {
     console.error("Get Doctor Profile Error:", error);
@@ -81,7 +83,7 @@ const getDoctorProfile = async (req, res) => {
 const updateDoctorProfile = async (req, res) => {
   try {
     const updates = req.body || {};
-    const allowedUpdates = [
+    const allowedFields = [
       "degree",
       "experience",
       "consultationFee",
@@ -92,9 +94,10 @@ const updateDoctorProfile = async (req, res) => {
     ];
     const updateData = {};
 
-    allowedUpdates.forEach((field) => {
-      if (updates[field] !== undefined)
+    allowedFields.forEach((field) => {
+      if (updates[field] !== undefined) {
         updateData[`doctorProfile.${field}`] = updates[field];
+      }
     });
 
     if (req.file) updateData["doctorProfile.profileImage"] = req.file.buffer;
@@ -104,6 +107,7 @@ const updateDoctorProfile = async (req, res) => {
       { $set: updateData },
       { new: true, runValidators: true }
     ).select("-password");
+
     res
       .status(200)
       .json({ success: true, message: "Profile Updated Successfully", doctor });

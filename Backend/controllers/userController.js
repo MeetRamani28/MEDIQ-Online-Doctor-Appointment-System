@@ -2,16 +2,17 @@ const User = require("../model/user-model");
 const Specialization = require("../model/specialization-model");
 const Appointment = require("../model/appointment-model");
 const mongoose = require("mongoose");
-const AppointmentMedicalRecord = require("../model/appointment-medical-record-model");
 
 const getAllSpecializations = async (req, res) => {
   try {
     const specializations = await Specialization.find({ isActive: true }).sort({
       createdAt: -1,
     });
-    res
-      .status(200)
-      .json({ success: true, count: specializations.length, specializations });
+    res.status(200).json({
+      success: true,
+      count: specializations.length,
+      specializations,
+    });
   } catch (error) {
     console.error("Fetch Specializations Error:", error);
     res.status(500).json({ success: false, message: "Server Error" });
@@ -24,7 +25,6 @@ const getDoctorsBySpecialization = async (req, res) => {
 
     let specializationObjectId = specializationId;
 
-    // If not ObjectId, treat as name
     if (!mongoose.Types.ObjectId.isValid(specializationId)) {
       const specialization = await Specialization.findOne({
         name: specializationId,
@@ -69,7 +69,12 @@ const getMyMedicalRecords = async (req, res) => {
       .populate("doctor", "fullName email")
       .populate("medicalRecord")
       .sort({ updatedAt: -1 });
-    res.status(200).json({ success: true, count: records.length, records });
+
+    res.status(200).json({
+      success: true,
+      count: records.length,
+      records,
+    });
   } catch (error) {
     console.error("Fetch My Records Error:", error);
     res.status(500).json({ success: false, message: "Server Error" });

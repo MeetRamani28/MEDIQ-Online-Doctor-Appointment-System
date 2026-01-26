@@ -1,14 +1,13 @@
 const express = require("express");
 const router = express.Router();
+const authMiddleware = require("../middlewares/authMiddlewares");
 
 const {
   createSpecialization,
-  getAllSpecializations,
   updateSpecialization,
   toggleSpecializationStatus,
+  getAllSpecializations,
 } = require("../controllers/specializationController");
-
-const authMiddleware = require("../middlewares/authMiddlewares");
 
 router.post("/", authMiddleware("ADMIN"), createSpecialization);
 router.put("/:id", authMiddleware("ADMIN"), updateSpecialization);

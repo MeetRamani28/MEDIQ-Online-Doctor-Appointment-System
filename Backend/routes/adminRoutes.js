@@ -1,25 +1,24 @@
 const express = require("express");
 const router = express.Router();
+const authMiddleware = require("../middlewares/authMiddlewares");
 
 const {
-  getAllAppointments,
   getAdminDashboard,
-  getAllDoctors,
   getAllUsers,
-  deleteUserByAdmin,
+  getAllDoctors,
   toggleDoctorStatus,
+  deleteUserByAdmin,
+  getAllAppointments,
 } = require("../controllers/adminController");
-
-const authMiddleware = require("../middlewares/authMiddlewares");
 
 router.get("/dashboard", authMiddleware("ADMIN"), getAdminDashboard);
 
 router.get("/users", authMiddleware("ADMIN"), getAllUsers);
-router.delete("/user/:userId", authMiddleware("ADMIN"), deleteUserByAdmin);
+router.delete("/users/:userId", authMiddleware("ADMIN"), deleteUserByAdmin);
 
 router.get("/doctors", authMiddleware("ADMIN"), getAllDoctors);
 router.patch(
-  "/doctor/toggle/:doctorId",
+  "/doctors/toggle/:doctorId",
   authMiddleware("ADMIN"),
   toggleDoctorStatus
 );

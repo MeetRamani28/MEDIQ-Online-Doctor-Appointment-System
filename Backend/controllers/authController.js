@@ -4,10 +4,11 @@ const { comparePass } = require("../utils/decryptPass");
 const { hashPass } = require("../utils/encryptPass");
 const { generateToken } = require("../utils/generateToken");
 
+/**
+ * @desc Register a new user (PATIENT, DOCTOR, or ADMIN)
+ */
 const registerUser = async (req, res) => {
   try {
-    const body = req.body || {};
-
     const {
       fullName,
       email,
@@ -24,39 +25,29 @@ const registerUser = async (req, res) => {
       specialization,
       available,
       maxAppointmentsPerDay,
-    } = body;
+    } = req.body;
 
-    if (!fullName || !email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "FullName, Email And Password Are Required!",
-      });
-    }
+    if (!fullName || !email || !password)
+      return res
+        .status(400)
+        .json({ success: false, message: "Required fields missing" });
 
-    if (role === "ADMIN") {
-      const existingAdmin = await User.findOne({ role: "ADMIN" });
-      if (existingAdmin) {
-        return res.status(403).json({
-          success: false,
-          message: "Admin already exists. Multiple admins are not allowed!",
-        });
-      }
-    }
+    if (role === "ADMIN" && (await User.findOne({ role: "ADMIN" })))
+      return res
+        .status(403)
+        .json({ success: false, message: "Admin already exists" });
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(409).json({
-        success: false,
-        message: "User Already Exists!",
-      });
-    }
+    if (await User.findOne({ email }))
+      return res
+        .status(409)
+        .json({ success: false, message: "User already exists" });
 
-    const hasedPassword = await hashPass(password);
+    const hashedPassword = await hashPass(password);
 
     const userData = {
       fullName,
       email,
-      password: hasedPassword,
+      password: hashedPassword,
       role: role || "PATIENT",
       gender,
       dob,
@@ -64,21 +55,16 @@ const registerUser = async (req, res) => {
     };
 
     if (role === "DOCTOR") {
-      if (!specialization) {
-        return res.status(400).json({
-          success: false,
-          message: "Specialization Is Required For Doctor!",
-        });
-      }
+      if (!specialization)
+        return res
+          .status(400)
+          .json({ success: false, message: "Specialization required" });
 
       const spec = await Specialization.findOne({ name: specialization });
-
-      if (!spec) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid Specialization Name!",
-        });
-      }
+      if (!spec)
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid specialization" });
 
       userData.doctorProfile = {
         degree,
@@ -87,20 +73,26 @@ const registerUser = async (req, res) => {
         description,
         hospitalAddress,
         specialization: spec._id,
-        profileImage: req.file ? req.file.buffer : undefined,
-        available: available !== undefined ? available : true,
+        profileImage: req.file?.buffer,
+        available: available ?? true,
         maxAppointmentsPerDay: maxAppointmentsPerDay || 10,
+        isActive: true,
       };
     }
 
     const user = await User.create(userData);
-
     const token = generateToken(user);
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 1000 * 60 * 60 * 24, // 1 day
+    });
 
     res.status(201).json({
       success: true,
-      message: "Registration SuccessFull",
-      token,
       user: {
         id: user._id,
         fullName: user.fullName,
@@ -108,51 +100,36 @@ const registerUser = async (req, res) => {
         role: user.role,
       },
     });
-  } catch (error) {
-    console.error("Registration Error!", error);
-    res.status(500).json({
-      success: false,
-      message: "Server Error",
-    });
+  } catch (err) {
+    console.error("Register error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
+/**
+ * @desc Login user (PATIENT, DOCTOR, ADMIN)
+ */
 const loginUser = async (req, res) => {
   try {
-    const body = req.body || {};
-
-    const { email, password } = body;
-
-    if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "Email And Password Are Required!",
-      });
-    }
-
+    const { email, password } = req.body;
     const user = await User.findOne({ email }).select("+password");
-
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "User Not Exists!",
-      });
-    }
-
-    const isMatch = await comparePass(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({
-        success: false,
-        message: "Incorrect Password!",
-      });
-    }
+    if (!user || !(await comparePass(password, user.password)))
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid credentials" });
 
     const token = generateToken(user);
 
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 1000 * 60 * 60 * 24,
+    });
+
     res.status(200).json({
       success: true,
-      message: "Login SuccessFull!",
-      token,
       user: {
         id: user._id,
         fullName: user.fullName,
@@ -160,27 +137,42 @@ const loginUser = async (req, res) => {
         role: user.role,
       },
     });
-  } catch (error) {
-    console.error("Login Error: ", error);
-    res.status(500).json({
-      success: false,
-      message: "Login Failed!",
-    });
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ success: false, message: "Login failed" });
   }
 };
 
+/**
+ * @desc Logout user
+ */
 const logoutUser = async (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+  });
+  res.status(200).json({ success: true, message: "Logged out" });
+};
+
+/**
+ * @desc Get logged-in user profile
+ */
+const getUserProfile = async (req, res) => {
   try {
-    res.status(200).json({
-      success: true,
-      message: "Logout SuccessFully",
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Logout Failed!",
-    });
+    if (!req.user)
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+
+    const user = await User.findById(req.user._id)
+      .select("-password")
+      .populate("doctorProfile.specialization");
+
+    res.status(200).json({ success: true, user });
+  } catch (err) {
+    console.error("Get User Profile Error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
-module.exports = { registerUser, loginUser, logoutUser };
+module.exports = { registerUser, loginUser, logoutUser, getUserProfile };

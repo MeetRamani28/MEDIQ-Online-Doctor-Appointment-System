@@ -32,11 +32,13 @@ const getAdminDashboard = async (req, res) => {
   }
 };
 
+// Users
 const getAllUsers = async (req, res) => {
   try {
     const users = await User.find({ role: "PATIENT" })
       .select("-password")
       .sort({ createdAt: -1 });
+
     res.status(200).json({ success: true, count: users.length, users });
   } catch (error) {
     console.error("Fetch Users Error:", error);
@@ -50,6 +52,7 @@ const getAllDoctors = async (req, res) => {
       .select("-password")
       .populate("doctorProfile.specialization")
       .sort({ createdAt: -1 });
+
     res.status(200).json({ success: true, count: doctors.length, doctors });
   } catch (error) {
     console.error("Fetch Doctors Error:", error);
@@ -88,6 +91,7 @@ const deleteUserByAdmin = async (req, res) => {
       return res
         .status(404)
         .json({ success: false, message: "User Not Found!" });
+
     res
       .status(200)
       .json({ success: true, message: "User Deleted Successfully" });
@@ -104,6 +108,7 @@ const getAllAppointments = async (req, res) => {
       .populate("user", "fullName email")
       .populate("medicalRecord")
       .sort({ appointmentDate: -1 });
+
     res
       .status(200)
       .json({ success: true, count: appointments.length, appointments });

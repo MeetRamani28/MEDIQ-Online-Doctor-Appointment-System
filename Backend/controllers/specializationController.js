@@ -12,13 +12,14 @@ const createSpecialization = async (req, res) => {
     if (exists)
       return res
         .status(409)
-        .json({ success: false, message: "Already Exists!" });
+        .json({ success: false, message: "Specialization already exists!" });
 
     const specialization = await Specialization.create({
       name,
       description,
       isActive: true,
     });
+
     res.status(201).json({
       success: true,
       message: "Specialization Created",
@@ -38,10 +39,19 @@ const updateSpecialization = async (req, res) => {
       req.body,
       { new: true, runValidators: true }
     );
-    if (!specialization)
-      return res.status(404).json({ success: false, message: "Not Found!" });
 
-    res.status(200).json({ success: true, message: "Updated", specialization });
+    if (!specialization)
+      return res
+        .status(404)
+        .json({ success: false, message: "Specialization not found!" });
+
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Specialization updated",
+        specialization,
+      });
   } catch (error) {
     console.error("Update Specialization Error:", error);
     res.status(500).json({ success: false, message: "Server Error" });
@@ -53,14 +63,16 @@ const toggleSpecializationStatus = async (req, res) => {
     const { id } = req.params;
     const specialization = await Specialization.findById(id);
     if (!specialization)
-      return res.status(404).json({ success: false, message: "Not Found!" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Specialization not found!" });
 
     specialization.isActive = !specialization.isActive;
     await specialization.save();
 
     res.status(200).json({
       success: true,
-      message: "Status Updated",
+      message: "Specialization status updated",
       isActive: specialization.isActive,
     });
   } catch (error) {
@@ -74,9 +86,12 @@ const getAllSpecializations = async (req, res) => {
     const specializations = await Specialization.find({ isActive: true }).sort({
       createdAt: -1,
     });
-    res
-      .status(200)
-      .json({ success: true, count: specializations.length, specializations });
+
+    res.status(200).json({
+      success: true,
+      count: specializations.length,
+      specializations,
+    });
   } catch (error) {
     console.error("Fetch Specializations Error:", error);
     res.status(500).json({ success: false, message: "Server Error" });
