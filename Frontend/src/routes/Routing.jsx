@@ -5,6 +5,9 @@ import AuthPage from "../pages/auth/AuthPage";
 import Home from "../pages/PATIENT/Home";
 import AdminDashboard from "../pages/ADMIN/AdminDashboard";
 import DoctorDashboard from "../pages/DOCTOR/DoctorDashboard";
+import Service from "../pages/PATIENT/Service";
+import Blogs from "../pages/PATIENT/Blogs";
+import PatientLayout from "../layouts/PatientLayout";
 
 const ProtectedRoute = ({ role, children }) => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
@@ -19,14 +22,19 @@ const Routing = () => {
   return (
     <Routes>
       <Route path="/" element={<AuthPage />} />
+      <Route path="/auth" element={<AuthPage />} />
       <Route
-        path="/patient/home"
+        path="/patient"
         element={
           <ProtectedRoute role="PATIENT">
-            <Home />
+            <PatientLayout />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route path="home" element={<Home />} />
+        <Route path="services" element={<Service />} />
+        <Route path="blogs" element={<Blogs />} />
+      </Route>
 
       <Route
         path="/admin/dashboard"

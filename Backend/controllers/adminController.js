@@ -32,7 +32,6 @@ const getAdminDashboard = async (req, res) => {
   }
 };
 
-// Users
 const getAllUsers = async (req, res) => {
   try {
     const users = await User.find({ role: "PATIENT" })

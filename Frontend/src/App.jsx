@@ -14,7 +14,11 @@ function App() {
     }
   }, [dispatch, isAuthenticated]);
 
-  return <Routing />;
+  return (
+    <div className="font-[gilroy]">
+      <Routing />
+    </div>
+  );
 }
 
 export default App;

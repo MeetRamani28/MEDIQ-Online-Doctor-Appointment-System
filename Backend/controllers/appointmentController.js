@@ -126,7 +126,6 @@ const getMyAppointments = async (req, res) => {
   }
 };
 
-// Get Doctor's Appointments
 const getDoctorAppointments = async (req, res) => {
   try {
     const appointments = await Appointment.find({ doctor: req.user._id })
