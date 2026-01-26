@@ -33,6 +33,16 @@ const registerUser = async (req, res) => {
       });
     }
 
+    if (role === "ADMIN") {
+      const existingAdmin = await User.findOne({ role: "ADMIN" });
+      if (existingAdmin) {
+        return res.status(403).json({
+          success: false,
+          message: "Admin already exists. Multiple admins are not allowed!",
+        });
+      }
+    }
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(409).json({

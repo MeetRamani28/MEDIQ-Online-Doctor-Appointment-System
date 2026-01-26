@@ -9,6 +9,12 @@ const multer = require("multer");
 require("./config/database-connection");
 
 const authRouter = require("./routes/authRoutes");
+const userRouter = require("./routes/userRoutes");
+const adminRouter = require("./routes/adminRoutes");
+const appointmentRouter = require("./routes/appointmentRoutes");
+const medicalRecordRouter = require("./routes/appointmentMedicalRecordRoutes");
+const specializationRouter = require("./routes/specializationRoutes");
+const doctorRouter = require("./routes/doctorRoutes");
 
 app.use(
   cors({
@@ -38,7 +44,13 @@ app.use(
   })
 );
 
-app.use("/auth", authRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/admin", adminRouter);
+app.use("/api/appointments", appointmentRouter);
+app.use("/api/medical-records", medicalRecordRouter);
+app.use("/api/specializations", specializationRouter);
+app.use("/api/users", userRouter);
+app.use("/api/doctor", doctorRouter);
 
 app.get("/", (req, res) => {
   res.send("Welcome To MEDIQ Backend!...🏥");
