@@ -8,6 +8,10 @@ import DoctorDashboard from "../pages/DOCTOR/DoctorDashboard";
 import Service from "../pages/PATIENT/Service";
 import Blogs from "../pages/PATIENT/Blogs";
 import PatientLayout from "../layouts/PatientLayout";
+import Contact from "../pages/PATIENT/Contact";
+import About from "../pages/PATIENT/About";
+import DoctorDetail from "../components/atoms/DoctorDetails";
+import MyAppointments from "../pages/PATIENT/Appointments";
 
 const ProtectedRoute = ({ role, children }) => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
@@ -34,6 +38,10 @@ const Routing = () => {
         <Route path="home" element={<Home />} />
         <Route path="services" element={<Service />} />
         <Route path="blogs" element={<Blogs />} />
+        <Route path="contact" element={<Contact />} />
+        <Route path="about" element={<About />} />
+        <Route path="doctors/:id" element={<DoctorDetail />} />
+        <Route path="appointments" element={<MyAppointments />} />
       </Route>
 
       <Route

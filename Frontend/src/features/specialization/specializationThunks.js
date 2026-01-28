@@ -22,6 +22,39 @@ export const fetchSpecializations = createAsyncThunk(
   }
 );
 
+export const fetchDoctorsBySpecialization = createAsyncThunk(
+  "specialization/fetchDoctorsBySpecialization",
+  async (specializationId, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.get(
+        `/users/specialization/${specializationId}/doctors`
+      );
+
+      return {
+        doctors: res.data.doctors,
+        count: res.data.count,
+      };
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to fetch doctors"
+      );
+    }
+  }
+);
+
+export const fetchDoctorById = createAsyncThunk(
+  "specialization/fetchDoctorById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const res = await axios.get(`/specialization/doctors/${id}`);
+      return res.data.doctor;
+      // eslint-disable-next-line no-unused-vars
+    } catch (err) {
+      return rejectWithValue("Failed to fetch doctor");
+    }
+  }
+);
+
 export const createSpecialization = createAsyncThunk(
   "specialization/create",
   async (data, { rejectWithValue }) => {

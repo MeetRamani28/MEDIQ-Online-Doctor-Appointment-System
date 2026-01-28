@@ -13,6 +13,7 @@ const appointmentRouter = require("./routes/appointmentRoutes");
 const medicalRecordRouter = require("./routes/appointmentMedicalRecordRoutes");
 const specializationRouter = require("./routes/specializationRoutes");
 const doctorRouter = require("./routes/doctorRoutes");
+const contactRouter = require("./routes/contactRoutes");
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use("/api/appointments", appointmentRouter);
 app.use("/api/medical-records", medicalRecordRouter);
 app.use("/api/specializations", specializationRouter);
 app.use("/api/doctor", doctorRouter);
+app.use("/api/contact", contactRouter);
 
 app.get("/", (req, res) => res.status(200).send("🏥 MEDIQ Backend is Running"));
 

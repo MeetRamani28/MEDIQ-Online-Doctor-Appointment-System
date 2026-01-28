@@ -9,7 +9,7 @@ const Button = ({
 }) => {
   const variants = {
     primary:
-      "bg-[#2C7BE5] hover:bg-[#1A5FCC] text-white focus:ring-[#2C7BE5]/40",
+      "bg-[#0097a7] hover:bg-[#007c89] text-white focus:ring-[#2C7BE5]/40",
     secondary:
       "bg-[#00B894] hover:bg-[#009E7A] text-white focus:ring-[#00B894]/40",
     outline:

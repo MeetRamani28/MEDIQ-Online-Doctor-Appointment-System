@@ -45,13 +45,11 @@ const updateSpecialization = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Specialization not found!" });
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Specialization updated",
-        specialization,
-      });
+    res.status(200).json({
+      success: true,
+      message: "Specialization updated",
+      specialization,
+    });
   } catch (error) {
     console.error("Update Specialization Error:", error);
     res.status(500).json({ success: false, message: "Server Error" });
@@ -98,9 +96,42 @@ const getAllSpecializations = async (req, res) => {
   }
 };
 
+const fetchDoctorById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const doctor = await User.findOne({
+      _id: id,
+      role: "doctor",
+      isActive: true,
+    })
+      .select("-password")
+      .populate("specialization", "name");
+
+    if (!doctor) {
+      return res.status(404).json({
+        success: false,
+        message: "Doctor not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      doctor,
+    });
+  } catch (error) {
+    console.error("Fetch Doctor By ID Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
 module.exports = {
   createSpecialization,
   updateSpecialization,
   toggleSpecializationStatus,
   getAllSpecializations,
+  fetchDoctorById,
 };

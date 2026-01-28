@@ -7,6 +7,7 @@ const {
   updateSpecialization,
   toggleSpecializationStatus,
   getAllSpecializations,
+  fetchDoctorById,
 } = require("../controllers/specializationController");
 
 router.post("/", authMiddleware("ADMIN"), createSpecialization);
@@ -18,5 +19,6 @@ router.patch(
 );
 
 router.get("/", getAllSpecializations);
+router.get("/doctors/:id", fetchDoctorById);
 
 module.exports = router;

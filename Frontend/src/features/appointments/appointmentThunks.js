@@ -55,7 +55,7 @@ export const getMyAppointments = createAsyncThunk(
   "appointment/myAppointments",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.get("/appointments/my");
+      const res = await axiosInstance.get("/appointments/patient");
       return res.data.appointments;
     } catch (err) {
       return rejectWithValue(

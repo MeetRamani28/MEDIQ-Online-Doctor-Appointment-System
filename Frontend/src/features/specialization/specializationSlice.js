@@ -1,6 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
   fetchSpecializations,
+  fetchDoctorsBySpecialization,
+  fetchDoctorById,
   createSpecialization,
   updateSpecialization,
   toggleSpecializationStatus,
@@ -8,9 +10,12 @@ import {
 
 const initialState = {
   list: [],
+  doctors: [],
+  doctorCount: 0,
   loading: false,
   error: null,
   successMessage: null,
+  selectedDoctor: null,
 };
 
 const specializationSlice = createSlice({
@@ -22,6 +27,10 @@ const specializationSlice = createSlice({
     },
     clearSpecializationSuccess: (state) => {
       state.successMessage = null;
+    },
+    clearDoctors: (state) => {
+      state.doctors = [];
+      state.doctorCount = 0;
     },
   },
   extraReducers: (builder) => {
@@ -39,13 +48,41 @@ const specializationSlice = createSlice({
         state.error = action.payload;
       })
 
+      .addCase(fetchDoctorsBySpecialization.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.doctors = [];
+        state.doctorCount = 0;
+      })
+      .addCase(fetchDoctorsBySpecialization.fulfilled, (state, action) => {
+        state.loading = false;
+        state.doctors = action.payload.doctors;
+        state.doctorCount = action.payload.count;
+      })
+      .addCase(fetchDoctorsBySpecialization.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      .addCase(fetchDoctorById.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchDoctorById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.selectedDoctor = action.payload;
+      })
+      .addCase(fetchDoctorById.rejected, (state) => {
+        state.loading = false;
+        state.selectedDoctor = null;
+      })
+
       .addCase(createSpecialization.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(createSpecialization.fulfilled, (state, action) => {
         state.loading = false;
-        state.list.unshift(action.payload); // add new specialization at the top
+        state.list.unshift(action.payload);
         state.successMessage = "Specialization created successfully";
       })
       .addCase(createSpecialization.rejected, (state, action) => {

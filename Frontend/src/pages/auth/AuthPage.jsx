@@ -5,6 +5,8 @@ import { loginUser, registerUser } from "../../features/auth/authThunks";
 import { fetchSpecializations } from "../../features/specialization/specializationThunks";
 import Input from "../../components/atoms/Input";
 import Select from "../../components/atoms/Select";
+import { Ripples } from "ldrs/react";
+import "ldrs/react/Ripples.css";
 import LoginPageImage from "../../../public/images/login.avif";
 
 const AuthPage = () => {
@@ -26,20 +28,12 @@ const AuthPage = () => {
 
   useEffect(() => {
     if (!isAuthenticated || !user) return;
-
-    switch (user.role) {
-      case "ADMIN":
-        navigate("/admin/dashboard", { replace: true });
-        break;
-      case "DOCTOR":
-        navigate("/doctor/dashboard", { replace: true });
-        break;
-      case "PATIENT":
-        navigate("/patient/home", { replace: true });
-        break;
-      default:
-        navigate("/auth");
-    }
+    const roleMap = {
+      ADMIN: "/admin/dashboard",
+      DOCTOR: "/doctor/dashboard",
+      PATIENT: "/patient/home",
+    };
+    navigate(roleMap[user.role] || "/auth", { replace: true });
   }, [isAuthenticated, user, navigate]);
 
   useEffect(() => {
@@ -49,7 +43,6 @@ const AuthPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-
     if (mode === "login") {
       dispatch(loginUser(Object.fromEntries(formData)));
     } else {
@@ -58,16 +51,10 @@ const AuthPage = () => {
     }
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) setPreview(URL.createObjectURL(file));
-  };
-
   return (
     <div className="min-h-screen flex bg-[#F4F8FB]">
-      <div className="hidden lg:flex lg:fix w-1/2 items-center justify-center bg-[#F4F8FB]">
+      <div className="hidden lg:flex w-1/2 items-center justify-center bg-[#F4F8FB]">
         <div className="bg-[#EAF3FF] rounded-3xl p-10 w-[90%] max-w-lg shadow-sm">
-          {/* Image Card */}
           <div className="bg-white rounded-2xl p-4 shadow-md flex justify-center">
             <img
               src={LoginPageImage}
@@ -75,35 +62,26 @@ const AuthPage = () => {
               className="rounded-xl object-cover w-full max-h-80"
             />
           </div>
-
-          {/* Content */}
           <div className="text-center mt-8 space-y-4">
             <h2 className="text-2xl font-bold text-[#1E3A8A]">
               Your Health, Our Priority
             </h2>
-
             <p className="text-gray-600 text-sm leading-relaxed px-4">
               Connecting patients with top-tier medical professionals through a
               seamless online appointment system.
             </p>
           </div>
-
-          {/* Stats */}
           <div className="flex justify-between items-center mt-8 text-center">
             <div className="flex-1">
               <p className="text-lg font-bold text-blue-600">10k+</p>
               <p className="text-xs text-gray-500 uppercase">Patients</p>
             </div>
-
             <div className="w-px h-8 bg-gray-300" />
-
             <div className="flex-1">
               <p className="text-lg font-bold text-blue-600">500+</p>
               <p className="text-xs text-gray-500 uppercase">Doctors</p>
             </div>
-
             <div className="w-px h-8 bg-gray-300" />
-
             <div className="flex-1">
               <p className="text-lg font-bold text-blue-600">4.9/5</p>
               <p className="text-xs text-gray-500 uppercase">Rating</p>
@@ -114,7 +92,6 @@ const AuthPage = () => {
 
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6">
         <div className="w-full max-w-lg h-full bg-white rounded-3xl shadow-md px-10 py-8">
-          {/* Heading */}
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-gray-900">
               Welcome to <span className="text-blue-600">MEDIQ</span>
@@ -124,7 +101,6 @@ const AuthPage = () => {
             </p>
           </div>
 
-          {/* Tabs */}
           <div className="flex gap-6 border-b mb-6">
             {["login", "register"].map((m) => (
               <button
@@ -142,17 +118,14 @@ const AuthPage = () => {
             ))}
           </div>
 
-          {/* FORM */}
           <form
             onSubmit={handleSubmit}
             encType="multipart/form-data"
             className="space-y-4"
           >
-            {/* Role Selector (Register only) */}
             {mode === "register" && (
               <>
                 <p className="text-xs font-medium text-gray-500">Register as</p>
-
                 <div className="flex gap-3">
                   {["PATIENT", "DOCTOR"].map((r) => (
                     <button
@@ -171,7 +144,6 @@ const AuthPage = () => {
                 </div>
 
                 <Input name="fullName" placeholder="Full Name" required />
-
                 <div className="grid grid-cols-2 gap-3">
                   <Select name="gender">
                     <option value="">Gender</option>
@@ -180,12 +152,10 @@ const AuthPage = () => {
                   </Select>
                   <Input name="age" type="number" placeholder="Age" />
                 </div>
-
                 <Input name="dob" type="date" />
               </>
             )}
 
-            {/* Common Fields */}
             <Input name="email" placeholder="Email Address" required />
             <Input
               name="password"
@@ -194,7 +164,6 @@ const AuthPage = () => {
               required
             />
 
-            {/* Doctor Extra Fields */}
             {mode === "register" && role === "DOCTOR" && (
               <>
                 <div className="grid grid-cols-2 gap-3">
@@ -205,7 +174,6 @@ const AuthPage = () => {
                     placeholder="Experience (yrs)"
                   />
                 </div>
-
                 <div className="grid grid-cols-2 gap-3">
                   <Input
                     name="consultationFee"
@@ -225,18 +193,18 @@ const AuthPage = () => {
                     )}
                   </Select>
                 </div>
-
                 <Input name="hospitalAddress" placeholder="Hospital Address" />
                 <Input name="description" placeholder="Profile Description" />
 
-                {/* Image Upload */}
                 <Input
                   type="file"
                   name="profileImage"
                   accept="image/*"
-                  onChange={handleImageChange}
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) setPreview(URL.createObjectURL(file));
+                  }}
                 />
-
                 {preview && (
                   <img
                     src={preview}
@@ -247,19 +215,20 @@ const AuthPage = () => {
               </>
             )}
 
-            {/* Submit Button */}
             <button
-              disabled={loading}
+              type="submit"
+              disabled={loading || specLoading}
               className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition flex items-center justify-center gap-2"
             >
-              {loading
-                ? "Please wait..."
-                : mode === "login"
-                ? "Login →"
-                : "Create Account →"}
+              {loading ? (
+                <Ripples size="20" speed="2" color="#fff" />
+              ) : mode === "login" ? (
+                "Login →"
+              ) : (
+                "Create Account →"
+              )}
             </button>
 
-            {/* Footer text */}
             {mode === "register" && (
               <p className="text-[11px] text-gray-400 text-center mt-3">
                 By registering, you agree to MEDIQ’s Terms of Service & Privacy

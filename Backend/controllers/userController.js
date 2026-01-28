@@ -23,6 +23,21 @@ const getDoctorsBySpecialization = async (req, res) => {
   try {
     const { specializationId } = req.params;
 
+    if (specializationId === "All") {
+      const doctors = await User.find({
+        role: "DOCTOR",
+        "doctorProfile.isActive": true,
+      })
+        .select("-password")
+        .populate("doctorProfile.specialization");
+
+      return res.status(200).json({
+        success: true,
+        count: doctors.length,
+        doctors,
+      });
+    }
+
     let specializationObjectId = specializationId;
 
     if (!mongoose.Types.ObjectId.isValid(specializationId)) {
@@ -56,7 +71,10 @@ const getDoctorsBySpecialization = async (req, res) => {
     });
   } catch (error) {
     console.error("Get Doctors Error:", error);
-    res.status(500).json({ success: false, message: "Server Error" });
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
   }
 };
 
