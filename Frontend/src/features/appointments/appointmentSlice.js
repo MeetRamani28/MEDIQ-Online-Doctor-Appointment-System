@@ -28,7 +28,6 @@ const appointmentSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Create Appointment
       .addCase(createAppointment.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -43,7 +42,6 @@ const appointmentSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Cancel Appointment
       .addCase(cancelAppointment.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -62,7 +60,6 @@ const appointmentSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Complete Appointment
       .addCase(completeAppointment.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -76,7 +73,6 @@ const appointmentSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Get My Appointments
       .addCase(getMyAppointments.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -90,7 +86,6 @@ const appointmentSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Get Doctor Appointments
       .addCase(getDoctorAppointments.pending, (state) => {
         state.loading = true;
         state.error = null;

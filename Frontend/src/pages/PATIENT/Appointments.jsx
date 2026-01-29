@@ -61,7 +61,6 @@ const MyAppointments = () => {
   return (
     <section className="min-h-screen bg-[#F7FBFC] pt-[12vh] px-4 sm:px-8 lg:px-16 pb-16">
       <div className="max-w-6xl mx-auto space-y-6">
-        {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-3xl font-bold text-gray-800">
             My <span className="text-[#0097a7]">Appointments</span>
@@ -71,7 +70,6 @@ const MyAppointments = () => {
           </p>
         </div>
 
-        {/* Empty State */}
         {myAppointments.length === 0 ? (
           <div className="bg-white rounded-3xl p-10 text-center shadow-sm">
             <p className="text-gray-500 text-lg">
@@ -97,7 +95,6 @@ const MyAppointments = () => {
                     </p>
                   </div>
 
-                  {/* Right Actions */}
                   <div className="flex items-center gap-3">
                     <span
                       className={`px-3 py-1 rounded-full text-sm font-medium ${

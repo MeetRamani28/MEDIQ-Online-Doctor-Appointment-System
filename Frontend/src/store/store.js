@@ -3,6 +3,7 @@ import authReducer from "../features/auth/authSlice";
 import specializationReducer from "../features/specialization/specializationSlice";
 import contactReducer from "../features/contact/contactSlice";
 import appointmentReducer from "../features/appointments/appointmentSlice";
+import adminReducer from "../features/admin/adminSlice";
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     specialization: specializationReducer,
     contact: contactReducer,
     appointment: appointmentReducer,
+    admin: adminReducer,
   },
 });
 

@@ -34,12 +34,10 @@ const Contact = () => {
     <section className="w-full min-h-screen pt-[12vh] pb-12 bg-[#F7FBFC]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-          {/* Image */}
           <div className="rounded-3xl overflow-hidden shadow-md">
             <Image image="/images/contact1.jpg" />
           </div>
 
-          {/* Form */}
           <div className="bg-white rounded-3xl shadow-md p-6 sm:p-8">
             <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">
               Contact <span className="text-[#0097a7]">Us</span>

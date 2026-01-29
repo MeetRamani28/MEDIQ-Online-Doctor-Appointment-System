@@ -12,6 +12,12 @@ import Contact from "../pages/PATIENT/Contact";
 import About from "../pages/PATIENT/About";
 import DoctorDetail from "../components/atoms/DoctorDetails";
 import MyAppointments from "../pages/PATIENT/Appointments";
+import AdminLayout from "../layouts/AdminLayout";
+import AdminDoctors from "../pages/ADMIN/AdminDoctors";
+import AdminUsers from "../pages/ADMIN/AdminUsers";
+import AdminAppintments from "../pages/ADMIN/AdminAppintments";
+import AdminContacts from "../pages/ADMIN/AdminContacts";
+import AdminSpecialization from "../pages/ADMIN/AdminSpecialization";
 
 const ProtectedRoute = ({ role, children }) => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
@@ -45,13 +51,20 @@ const Routing = () => {
       </Route>
 
       <Route
-        path="/admin/dashboard"
+        path="/admin"
         element={
           <ProtectedRoute role="ADMIN">
-            <AdminDashboard />
+            <AdminLayout />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="doctors" element={<AdminDoctors />} />
+        <Route path="users" element={<AdminUsers />} />
+        <Route path="appointments" element={<AdminAppintments />} />
+        <Route path="specialization" element={<AdminSpecialization />} />
+        <Route path="contact" element={<AdminContacts />} />
+      </Route>
 
       <Route
         path="/doctor/dashboard"

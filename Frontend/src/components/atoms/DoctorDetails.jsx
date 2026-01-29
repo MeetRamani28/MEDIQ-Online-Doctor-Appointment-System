@@ -28,7 +28,6 @@ const DoctorDetail = () => {
     }
   }, [dispatch, id, doctor]);
 
-  // ----- Booking Slots State -----
   const [currentWeek, setCurrentWeek] = useState(
     startOfWeek(new Date(), { weekStartsOn: 1 })
   );
@@ -82,7 +81,6 @@ const DoctorDetail = () => {
     setSelectedSlot(null);
   };
 
-  // ----- Handle Booking -----
   const handleBook = async () => {
     if (!selectedSlot) return;
 
@@ -124,7 +122,6 @@ const DoctorDetail = () => {
   return (
     <section className="min-h-screen bg-[#F7FBFC] pt-[12vh] px-4 sm:px-8 lg:px-16">
       <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-sm p-6 sm:p-10 space-y-6">
-        {/* Doctor Info */}
         <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
           <img
             src={getImageSrc(profile?.profileImage)}
@@ -153,7 +150,6 @@ const DoctorDetail = () => {
 
         <div className="h-px bg-gray-200 my-4" />
 
-        {/* About Doctor */}
         <div>
           <h2 className="text-lg font-semibold text-gray-800 mb-2">
             About Doctor
@@ -163,7 +159,6 @@ const DoctorDetail = () => {
           </p>
         </div>
 
-        {/* Doctor Info Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-sm">
           <div className="bg-gray-50 p-4 rounded-xl text-center">
             <span className="text-gray-400">Email</span>
@@ -185,7 +180,6 @@ const DoctorDetail = () => {
           </div>
         </div>
 
-        {/* Booking Slots */}
         {profile?.available && (
           <div className="mt-8 space-y-4">
             <h2 className="text-lg font-semibold text-gray-800 mb-3">
@@ -250,7 +244,6 @@ const DoctorDetail = () => {
               )}
             </div>
 
-            {/* Book Button */}
             <div className="mt-4 flex justify-center">
               <Button
                 onClick={handleBook}
@@ -268,7 +261,6 @@ const DoctorDetail = () => {
           </div>
         )}
 
-        {/* Back Button */}
         <div className="flex flex-col sm:flex-row gap-4 mt-6">
           <Button
             onClick={() => navigate(-1)}

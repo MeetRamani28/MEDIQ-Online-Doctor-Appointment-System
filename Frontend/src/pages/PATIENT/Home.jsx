@@ -8,7 +8,6 @@ const Home = () => {
 
   return (
     <section className="relative h-screen w-full flex items-center justify-start overflow-hidden">
-      {/* Background Image */}
       <img
         src={bg}
         alt="Healthcare background"
@@ -16,10 +15,8 @@ const Home = () => {
         className="absolute inset-0 w-full h-full object-cover"
       />
 
-      {/* Overlay */}
       <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/40 to-transparent" />
 
-      {/* Content */}
       <div className="relative z-10 px-5 sm:px-10 md:px-16 max-w-2xl">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white leading-tight">
           Book an <span className="text-[#0097a7]">Appointment</span>

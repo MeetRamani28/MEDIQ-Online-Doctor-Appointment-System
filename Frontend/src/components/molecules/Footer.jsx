@@ -5,9 +5,7 @@ import { FaInstagram, FaTwitter } from "react-icons/fa";
 const Footer = () => {
   return (
     <footer className="w-full bg-[#dceced] px-6 md:px-12 py-8">
-      {/* Top Section */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
-        {/* Brand */}
         <div>
           <h2 className="text-2xl font-bold mb-2">
             MEDI<span className="text-[#0097a7]">Q</span>
@@ -18,7 +16,6 @@ const Footer = () => {
           </p>
         </div>
 
-        {/* Quick Links */}
         <div>
           <h3 className="font-semibold text-lg mb-3">Quick Links</h3>
           <ul className="space-y-2 text-gray-700">
@@ -29,7 +26,6 @@ const Footer = () => {
           </ul>
         </div>
 
-        {/* Social */}
         <div>
           <h3 className="font-semibold text-lg mb-3">Follow Us</h3>
           <div className="flex justify-center md:justify-start gap-4 text-2xl text-gray-700">
@@ -40,7 +36,6 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Divider */}
       <div className="border-t border-gray-300 mt-8 pt-4 text-center text-sm text-gray-600">
         © {new Date().getFullYear()}{" "}
         <span className="text-[#0097a7] font-medium">MEDIQ</span>. All Rights
