@@ -31,7 +31,6 @@ export const getDoctorDashboard = createAsyncThunk(
   }
 );
 
-// Fetch doctor medical records
 export const getDoctorMedicalRecords = createAsyncThunk(
   "doctor/medicalRecords",
   async (_, { rejectWithValue }) => {
@@ -46,7 +45,6 @@ export const getDoctorMedicalRecords = createAsyncThunk(
   }
 );
 
-// Fetch doctor profile
 export const getDoctorProfile = createAsyncThunk(
   "doctor/profile",
   async (_, { rejectWithValue }) => {
@@ -61,12 +59,11 @@ export const getDoctorProfile = createAsyncThunk(
   }
 );
 
-// Update doctor profile
 export const updateDoctorProfile = createAsyncThunk(
   "doctor/updateProfile",
   async (formData, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.patch("/doctor/profile", formData, {
+      const res = await axiosInstance.put("/doctor/profile", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       return res.data.doctor || null;

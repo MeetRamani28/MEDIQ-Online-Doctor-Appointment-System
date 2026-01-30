@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getDoctorDashboard } from "../../features/doctor/doctorThunks";
 import { clearDoctorError } from "../../features/doctor/doctorSlice";
@@ -14,12 +14,10 @@ import {
   FileWarning,
 } from "lucide-react";
 
-/* ---------------- Utils ---------------- */
 const getAppointmentDateTime = (appointment) => {
   if (!appointment?.appointmentDate || !appointment?.appointmentTime)
     return null;
 
-  // Supports "07:00 PM" format
   const [time, modifier] = appointment.appointmentTime.split(" ");
   let [hours, minutes] = time.split(":").map(Number);
 
