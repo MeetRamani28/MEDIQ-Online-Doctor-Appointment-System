@@ -4,48 +4,84 @@ const User = require("../model/user-model");
 const getDoctorDashboard = async (req, res) => {
   try {
     const doctorId = req.user._id;
+    const now = new Date();
 
-    const todayStart = new Date();
+    const todayStart = new Date(now);
     todayStart.setHours(0, 0, 0, 0);
-    const todayEnd = new Date();
+
+    const todayEnd = new Date(now);
     todayEnd.setHours(23, 59, 59, 999);
 
-    const [
-      totalAppointments,
-      upcomingAppointments,
-      completedAppointments,
-      cancelledAppointments,
-      todayAppointments,
-    ] = await Promise.all([
-      Appointment.countDocuments({ doctor: doctorId }),
-      Appointment.countDocuments({
-        doctor: doctorId,
-        status: "PENDING",
-        appointmentDate: { $gte: new Date() },
-      }),
-      Appointment.countDocuments({ doctor: doctorId, status: "COMPLETED" }),
-      Appointment.countDocuments({ doctor: doctorId, status: "CANCELLED" }),
-      Appointment.find({
-        doctor: doctorId,
-        appointmentDate: { $gte: todayStart, $lte: todayEnd },
-      })
-        .populate("user", "fullName email")
-        .sort({ appointmentTime: 1 }),
-    ]);
+    // 1️⃣ Fetch pending appointments from today onwards
+    const pendingAppointments = await Appointment.find({
+      doctor: doctorId,
+      status: "PENDING",
+      appointmentDate: { $gte: todayStart },
+    })
+      .populate("user", "fullName email")
+      .sort({ appointmentDate: 1 });
+
+    // 2️⃣ Convert "07:00 PM" → Date & filter upcoming
+    const upcomingAppointments = pendingAppointments.filter((appt) => {
+      if (!appt.appointmentTime) return false;
+
+      // "07:00 PM"
+      const [time, modifier] = appt.appointmentTime.split(" ");
+      let [hours, minutes] = time.split(":").map(Number);
+
+      if (modifier === "PM" && hours !== 12) hours += 12;
+      if (modifier === "AM" && hours === 12) hours = 0;
+
+      const apptDateTime = new Date(appt.appointmentDate);
+      apptDateTime.setHours(hours, minutes, 0, 0);
+
+      return apptDateTime > now;
+    });
+
+    // 3️⃣ Today upcoming appointments only
+    const todayAppointments = upcomingAppointments.filter((appt) => {
+      const apptDate = new Date(appt.appointmentDate);
+      return apptDate >= todayStart && apptDate <= todayEnd;
+    });
+
+    // 4️⃣ Counts
+    const completedAppointmentsCount = await Appointment.countDocuments({
+      doctor: doctorId,
+      status: "COMPLETED",
+    });
+
+    const totalAppointments = await Appointment.countDocuments({
+      doctor: doctorId,
+    });
+
+    // 5️⃣ Recent records
+    const recentRecords = await Appointment.find({
+      doctor: doctorId,
+      status: "COMPLETED",
+      updatedAt: { $gte: todayStart },
+    })
+      .populate("user", "fullName email")
+      .populate("medicalRecord")
+      .sort({ updatedAt: -1 })
+      .limit(5);
 
     res.status(200).json({
       success: true,
       data: {
-        totalAppointments,
-        upcomingAppointments,
-        completedAppointments,
-        cancelledAppointments,
+        totalPatients: totalAppointments,
+        upcomingAppointments, // ✅ 7 & 8 PM WILL SHOW
         todayAppointments,
+        completedAppointments: completedAppointmentsCount,
+        pendingReports: 0,
+        recentRecords,
       },
     });
   } catch (error) {
     console.error("Doctor Dashboard Error:", error);
-    res.status(500).json({ success: false, message: "Server Error" });
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
   }
 };
 

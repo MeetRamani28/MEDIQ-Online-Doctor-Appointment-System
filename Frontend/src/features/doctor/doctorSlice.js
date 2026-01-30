@@ -7,7 +7,14 @@ import {
 } from "./doctorThunks";
 
 const initialState = {
-  dashboard: {},
+  dashboard: {
+    upcomingAppointments: [],
+    todayAppointments: [],
+    recentRecords: [],
+    totalPatients: 0,
+    completedAppointments: 0,
+    pendingReports: 0,
+  },
   medicalRecords: [],
   profile: null,
   loading: false,
@@ -28,6 +35,7 @@ const doctorSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Dashboard
       .addCase(getDoctorDashboard.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -41,6 +49,7 @@ const doctorSlice = createSlice({
         state.error = action.payload;
       })
 
+      // Medical Records
       .addCase(getDoctorMedicalRecords.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -54,6 +63,7 @@ const doctorSlice = createSlice({
         state.error = action.payload;
       })
 
+      // Profile
       .addCase(getDoctorProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -67,6 +77,7 @@ const doctorSlice = createSlice({
         state.error = action.payload;
       })
 
+      // Update Profile
       .addCase(updateDoctorProfile.pending, (state) => {
         state.loading = true;
         state.error = null;

@@ -18,6 +18,7 @@ import AdminUsers from "../pages/ADMIN/AdminUsers";
 import AdminAppintments from "../pages/ADMIN/AdminAppintments";
 import AdminContacts from "../pages/ADMIN/AdminContacts";
 import AdminSpecialization from "../pages/ADMIN/AdminSpecialization";
+import DoctorLayout from "../layouts/DoctorLayout";
 
 const ProtectedRoute = ({ role, children }) => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
@@ -67,14 +68,16 @@ const Routing = () => {
       </Route>
 
       <Route
-        path="/doctor/dashboard"
+        path="/doctor"
         element={
           <ProtectedRoute role="DOCTOR">
-            <DoctorDashboard />
+            <DoctorLayout />
           </ProtectedRoute>
         }
-      />
-
+      >
+        <Route path="dashboard" element={<DoctorDashboard />} />
+      </Route>
+      
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );

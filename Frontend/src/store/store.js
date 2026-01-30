@@ -4,6 +4,7 @@ import specializationReducer from "../features/specialization/specializationSlic
 import contactReducer from "../features/contact/contactSlice";
 import appointmentReducer from "../features/appointments/appointmentSlice";
 import adminReducer from "../features/admin/adminSlice";
+import doctorReducer from "../features/doctor/doctorSlice";
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     contact: contactReducer,
     appointment: appointmentReducer,
     admin: adminReducer,
+    doctor: doctorReducer,
   },
 });
 

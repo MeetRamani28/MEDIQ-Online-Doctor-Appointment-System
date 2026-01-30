@@ -9,7 +9,20 @@ export const getDoctorDashboard = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.get("/doctor/dashboard");
-      return res.data.data;
+      const data = res.data.data;
+
+      // Ensure arrays
+      data.upcomingAppointments = Array.isArray(data.upcomingAppointments)
+        ? data.upcomingAppointments
+        : [];
+      data.todayAppointments = Array.isArray(data.todayAppointments)
+        ? data.todayAppointments
+        : [];
+      data.recentRecords = Array.isArray(data.recentRecords)
+        ? data.recentRecords
+        : [];
+
+      return data;
     } catch (err) {
       return rejectWithValue(
         err.response?.data?.message || "Failed to fetch doctor dashboard"
@@ -18,12 +31,13 @@ export const getDoctorDashboard = createAsyncThunk(
   }
 );
 
+// Fetch doctor medical records
 export const getDoctorMedicalRecords = createAsyncThunk(
   "doctor/medicalRecords",
   async (_, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.get("/doctor/medical-records");
-      return res.data.records;
+      return res.data.records || [];
     } catch (err) {
       return rejectWithValue(
         err.response?.data?.message || "Failed to fetch medical records"
@@ -32,12 +46,13 @@ export const getDoctorMedicalRecords = createAsyncThunk(
   }
 );
 
+// Fetch doctor profile
 export const getDoctorProfile = createAsyncThunk(
   "doctor/profile",
   async (_, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.get("/doctor/profile");
-      return res.data.doctor;
+      return res.data.doctor || null;
     } catch (err) {
       return rejectWithValue(
         err.response?.data?.message || "Failed to fetch profile"
@@ -46,6 +61,7 @@ export const getDoctorProfile = createAsyncThunk(
   }
 );
 
+// Update doctor profile
 export const updateDoctorProfile = createAsyncThunk(
   "doctor/updateProfile",
   async (formData, { rejectWithValue }) => {
@@ -53,7 +69,7 @@ export const updateDoctorProfile = createAsyncThunk(
       const res = await axiosInstance.patch("/doctor/profile", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      return res.data.doctor;
+      return res.data.doctor || null;
     } catch (err) {
       return rejectWithValue(
         err.response?.data?.message || "Failed to update profile"

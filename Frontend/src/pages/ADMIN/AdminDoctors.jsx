@@ -27,6 +27,7 @@ const AdminDoctors = () => {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
+    password: "",
     degree: "",
     experience: "",
     consultationFee: "",
@@ -38,15 +39,16 @@ const AdminDoctors = () => {
     profileImage: null,
   });
   const [imagePreview, setImagePreview] = useState(null);
-
   const [currentPage, setCurrentPage] = useState(1);
   const doctorsPerPage = 5;
 
+  // Fetch doctors and specializations on mount
   useEffect(() => {
     dispatch(fetchAllDoctors());
     dispatch(fetchSpecializations());
   }, [dispatch]);
 
+  // Open modal for adding/editing
   const handleOpenModal = (doctor = null) => {
     if (doctor) {
       setEditingId(doctor._id);
@@ -85,6 +87,7 @@ const AdminDoctors = () => {
     setIsModalOpen(true);
   };
 
+  // Handle input changes
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
     if (type === "file") {
@@ -97,6 +100,7 @@ const AdminDoctors = () => {
     }
   };
 
+  // Submit form (add/update)
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData();
@@ -105,6 +109,7 @@ const AdminDoctors = () => {
     });
 
     if (editingId) {
+      // Optimistic update for edit
       const tempDoctor = {
         _id: editingId,
         fullName: formData.fullName,
@@ -133,6 +138,7 @@ const AdminDoctors = () => {
         toast.error("Update failed. Refresh to see latest data.");
       }
     } else {
+      // Optimistic update for add
       const tempId = Date.now();
       const tempDoctor = {
         _id: tempId,
@@ -167,6 +173,7 @@ const AdminDoctors = () => {
     }
   };
 
+  // Delete doctor
   const handleDelete = async (id) => {
     dispatch({ type: "admin/deleteDoctorOptimistic", payload: id });
     toast.info("Deleting doctor...");
@@ -179,6 +186,7 @@ const AdminDoctors = () => {
     }
   };
 
+  // Toggle doctor active status
   const handleToggleStatus = async (id) => {
     dispatch({ type: "admin/toggleDoctorOptimistic", payload: id });
     try {
@@ -190,6 +198,7 @@ const AdminDoctors = () => {
     }
   };
 
+  // Pagination logic
   const indexOfLastDoctor = currentPage * doctorsPerPage;
   const indexOfFirstDoctor = indexOfLastDoctor - doctorsPerPage;
   const currentDoctors = doctors.slice(indexOfFirstDoctor, indexOfLastDoctor);
@@ -199,6 +208,7 @@ const AdminDoctors = () => {
     <div className="p-4 sm:p-6 max-w-7xl mx-auto">
       <ToastContainer position="top-right" autoClose={2000} />
 
+      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6 sm:mb-8 gap-4 sm:gap-0">
         <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-800">
           Doctor Management
@@ -211,6 +221,7 @@ const AdminDoctors = () => {
         </button>
       </div>
 
+      {/* Loading */}
       {loading && (
         <div className="flex flex-col justify-center items-center h-96">
           <Ripples size={80} speed={2} color="#0097a7" />
@@ -219,6 +230,8 @@ const AdminDoctors = () => {
           </p>
         </div>
       )}
+
+      {/* Error */}
       {error && (
         <div className="bg-red-50 border-l-4 border-red-500 p-4 my-6 rounded-r-lg">
           <div className="flex items-center">
@@ -227,6 +240,7 @@ const AdminDoctors = () => {
         </div>
       )}
 
+      {/* Doctors Table */}
       {!loading && currentDoctors.length > 0 && (
         <div className="overflow-x-auto bg-white rounded-xl shadow-lg border border-gray-100">
           <table className="w-full text-left border-collapse min-w-150">
@@ -296,6 +310,7 @@ const AdminDoctors = () => {
         </div>
       )}
 
+      {/* Pagination */}
       {doctors.length > doctorsPerPage && (
         <div className="flex flex-wrap justify-center mt-4 gap-2">
           {[...Array(totalPages)].map((_, i) => (
@@ -314,6 +329,7 @@ const AdminDoctors = () => {
         </div>
       )}
 
+      {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
           <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl p-6 overflow-y-auto max-h-[90vh]">
@@ -348,6 +364,14 @@ const AdminDoctors = () => {
                   onChange={handleChange}
                   className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-teal-400 outline-none"
                   required
+                />
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-teal-400 outline-none"
                 />
                 <input
                   type="text"

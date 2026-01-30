@@ -2,6 +2,7 @@ const User = require("../model/user-model");
 const Appointment = require("../model/appointment-model");
 const Specialization = require("../model/specialization-model");
 const mongoose = require("mongoose");
+const { hashPass } = require("../utils/encryptPass");
 
 const getAdminDashboard = async (req, res) => {
   try {
@@ -79,10 +80,11 @@ const getAllDoctors = async (req, res) => {
 
 const addDoctorByAdmin = async (req, res) => {
   try {
-    const payload = req.body || {}; // Safe fallback
-    const file = req.file; // profile image from multer
+    const payload = req.body || {};
+    const file = req.file;
 
-    const { fullName, email, degree, experience, specialization } = payload;
+    const { fullName, email, degree, experience, specialization, password } =
+      payload;
 
     if (!fullName || !email || !specialization) {
       return res.status(400).json({
@@ -91,12 +93,10 @@ const addDoctorByAdmin = async (req, res) => {
       });
     }
 
-    // Check if email exists
     if (await User.findOne({ email })) {
       return res.status(409).json({ success: false, message: "Email exists" });
     }
 
-    // Validate specialization
     const spec = await Specialization.findById(specialization);
     if (!spec) {
       return res
@@ -104,7 +104,9 @@ const addDoctorByAdmin = async (req, res) => {
         .json({ success: false, message: "Invalid Specialization" });
     }
 
-    // Build doctor profile
+    const rawPassword = password || "Doctor@123";
+    const hashedPassword = await hashPass(rawPassword);
+
     const doctorProfile = {
       degree: degree || "",
       experience: Number(experience) || 0,
@@ -114,11 +116,10 @@ const addDoctorByAdmin = async (req, res) => {
 
     if (file) doctorProfile.profileImage = file.buffer; // store file as buffer (or upload to storage)
 
-    // Create doctor user
     const user = await User.create({
       fullName,
       email,
-      password: "defaultPassword123", // Admin can reset later
+      password: hashedPassword,
       role: "DOCTOR",
       doctorProfile,
     });
@@ -366,10 +367,12 @@ const addUserByAdmin = async (req, res) => {
       });
     }
 
+    const hashedPassword = await hashPass(password);
+
     const user = await User.create({
       fullName,
       email,
-      password,
+      password: hashedPassword,
       role: "PATIENT", // 🔒 force patient
       gender,
       dob,
