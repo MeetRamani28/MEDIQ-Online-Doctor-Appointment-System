@@ -105,11 +105,21 @@ const getDoctorMedicalRecords = async (req, res) => {
 
 const getDoctorProfile = async (req, res) => {
   try {
+    // .select("-password") નો અર્થ છે પાસવર્ડ સિવાયનું બધું જ
     const doctor = await User.findById(req.user._id)
       .select("-password")
       .populate("doctorProfile.specialization");
 
-    res.status(200).json({ success: true, doctor });
+    if (!doctor) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Doctor not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      doctor,
+    });
   } catch (error) {
     console.error("Get Doctor Profile Error:", error);
     res.status(500).json({ success: false, message: "Server Error" });
@@ -141,7 +151,7 @@ const updateDoctorProfile = async (req, res) => {
     const doctor = await User.findByIdAndUpdate(
       req.user._id,
       { $set: updateData },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     ).select("-password");
 
     res

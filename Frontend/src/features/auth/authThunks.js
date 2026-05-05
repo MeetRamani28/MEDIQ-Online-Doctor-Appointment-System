@@ -18,10 +18,10 @@ export const registerUser = createAsyncThunk(
       return res.data;
     } catch (err) {
       return rejectWithValue(
-        err.response?.data?.message || "Registration failed"
+        err.response?.data?.message || "Registration failed",
       );
     }
-  }
+  },
 );
 
 export const loginUser = createAsyncThunk(
@@ -32,10 +32,10 @@ export const loginUser = createAsyncThunk(
       return res.data;
     } catch (err) {
       return rejectWithValue(
-        err.response?.data?.message || "Invalid credentials"
+        err.response?.data?.message || "Invalid credentials",
       );
     }
-  }
+  },
 );
 
 export const logoutUser = createAsyncThunk(
@@ -48,7 +48,7 @@ export const logoutUser = createAsyncThunk(
     } catch (err) {
       return rejectWithValue("Logout failed");
     }
-  }
+  },
 );
 
 export const fetchUserProfile = createAsyncThunk(
@@ -61,5 +61,21 @@ export const fetchUserProfile = createAsyncThunk(
     } catch (err) {
       return rejectWithValue("Unauthorized");
     }
-  }
+  },
+);
+
+export const verifyLicenseThunk = createAsyncThunk(
+  "auth/verifyLicense",
+  async (formData, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.post("/auth/verify-license", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return res.data; // સક્સેસ મેસેજ રિટર્ન કરશે
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Verification failed",
+      );
+    }
+  },
 );

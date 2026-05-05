@@ -56,6 +56,18 @@ const userSchema = new mongoose.Schema(
           hospitalAddress: {
             type: String,
           },
+          licenseNumber: {
+            type: String,
+            required: true,
+          },
+          licenseDocument: {
+            data: Buffer,
+            contentType: String,
+          },
+          isVerified: {
+            type: Boolean,
+            default: false,
+          },
           specialization: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Specialization",
@@ -76,14 +88,14 @@ const userSchema = new mongoose.Schema(
             default: true,
           },
         },
-        { _id: false }
+        { _id: false },
       ),
       required: function () {
         return this.role === "DOCTOR";
       },
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoose.model("User", userSchema);

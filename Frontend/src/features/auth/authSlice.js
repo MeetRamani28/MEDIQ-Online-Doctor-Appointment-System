@@ -4,6 +4,7 @@ import {
   loginUser,
   logoutUser,
   fetchUserProfile,
+  verifyLicenseThunk,
 } from "./authThunks";
 
 const initialState = {
@@ -11,6 +12,8 @@ const initialState = {
   isAuthenticated: false,
   loading: false,
   error: null,
+  verifying: false,
+  isDocVerified: false,
 };
 
 const authSlice = createSlice({
@@ -20,9 +23,29 @@ const authSlice = createSlice({
     clearAuthError: (state) => {
       state.error = null;
     },
+    resetDocVerification: (state) => {
+      state.isDocVerified = false;
+      state.verifying = false;
+    },
   },
   extraReducers: (builder) => {
     builder
+
+      .addCase(verifyLicenseThunk.pending, (state) => {
+        state.verifying = true;
+        state.error = null;
+        state.isDocVerified = false;
+      })
+      .addCase(verifyLicenseThunk.fulfilled, (state) => {
+        state.verifying = false;
+        state.isDocVerified = true;
+        state.error = null;
+      })
+      .addCase(verifyLicenseThunk.rejected, (state, action) => {
+        state.verifying = false;
+        state.isDocVerified = false;
+        state.error = action.payload;
+      })
 
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
@@ -74,5 +97,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearAuthError } = authSlice.actions;
+export const { clearAuthError, resetDocVerification } = authSlice.actions;
 export default authSlice.reducer;

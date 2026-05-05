@@ -8,14 +8,33 @@ const {
   loginUser,
   logoutUser,
   getUserProfile,
+  verifyLicense,
 } = require("../controllers/authController");
+
+/**
+ * @route POST /api/auth/verify-license
+ * @desc Pre-verify Doctor's license using OCR
+ * @access Public
+ */
+router.post(
+  "/verify-license",
+  upload.fields([{ name: "licenseDocument", maxCount: 1 }]),
+  verifyLicense,
+);
 
 /**
  * @route POST /api/auth/register
  * @desc Register a new user (PATIENT, DOCTOR, ADMIN)
  * @access Public (ADMIN requires middleware to protect route)
  */
-router.post("/register", upload.single("profileImage"), registerUser);
+router.post(
+  "/register",
+  upload.fields([
+    { name: "profileImage", maxCount: 1 },
+    { name: "licenseDocument", maxCount: 1 },
+  ]),
+  registerUser,
+);
 
 /**
  * @route POST /api/auth/login

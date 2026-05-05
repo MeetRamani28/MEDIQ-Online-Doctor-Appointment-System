@@ -80,17 +80,19 @@ const DoctorProfile = () => {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const formData = new FormData();
-    Object.keys(form).forEach((key) => {
-      if (form[key] !== null && form[key] !== undefined) {
-        formData.append(key, form[key]);
-      }
-    });
+  const formData = new FormData();
+  Object.keys(form).forEach((key) => {
+    if (form[key] !== null && form[key] !== undefined) {
+      // Change 'avatar' to 'profileImage' to match backend/schema
+      const fieldName = key === 'avatar' ? 'profileImage' : key;
+      formData.append(fieldName, form[key]);
+    }
+  });
 
-    dispatch(updateDoctorProfile(formData));
-  };
+  dispatch(updateDoctorProfile(formData));
+};
 
   if (loading && !profile) {
     return (
