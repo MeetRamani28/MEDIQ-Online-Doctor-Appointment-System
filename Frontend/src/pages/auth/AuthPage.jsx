@@ -15,6 +15,7 @@ import { Ripples } from "ldrs/react";
 import icon from "../../../public/images/icon.png";
 import "ldrs/react/Ripples.css";
 import { toast } from "react-toastify";
+import logo from "../../../public/images/icon.png"
 
 // Icons
 import {
@@ -33,20 +34,26 @@ import {
   FiBookOpen,
   FiDollarSign,
   FiAlignLeft,
+  FiChevronLeft,
 } from "react-icons/fi";
 
-// FormField Component (Outside to maintain focus)
-const FormField = ({ icon: Icon, children, label }) => (
-  <div className="space-y-1.5 w-full text-left">
-    {label && (
-      <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">
-        {label}
-      </label>
-    )}
+// Refined FormField to match the Screenshot's cleaner style
+const FormField = ({ icon: Icon, children, label, extra }) => (
+  <div className="space-y-1 w-full text-left">
+    <div className="flex justify-between items-center px-1">
+      {label && (
+        <label className="text-[13px] font-semibold text-slate-700">
+          {label}
+        </label>
+      )}
+      {extra}
+    </div>
     <div className="relative group">
-      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#0052CC] transition-colors z-10">
-        <Icon size={18} />
-      </div>
+      {Icon && (
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#0052CC] transition-colors z-10">
+          <Icon size={16} />
+        </div>
+      )}
       {children}
     </div>
   </div>
@@ -59,7 +66,6 @@ const AuthPage = () => {
   const [mode, setMode] = useState("login");
   const [role, setRole] = useState("PATIENT");
 
-  // --- Added new fields in formValues ---
   const [formValues, setFormValues] = useState({
     fullName: "",
     email: "",
@@ -70,10 +76,10 @@ const AuthPage = () => {
     licenseNumber: "",
     specialization: "",
     hospitalAddress: "",
-    degree: "", // New
-    experience: "", // New
-    consultationFee: "", // New
-    description: "", // New
+    degree: "",
+    experience: "",
+    consultationFee: "",
+    description: "",
   });
 
   const [files, setFiles] = useState({
@@ -109,7 +115,6 @@ const AuthPage = () => {
     setDocPreview(null);
     setFiles({ profileImage: null, licenseDocument: null });
     dispatch(resetDocVerification());
-    // Reset form values on mode change if needed
   }, [mode, role, dispatch]);
 
   const handleChange = (e) => {
@@ -173,65 +178,63 @@ const AuthPage = () => {
     }
   };
 
+  // Base input class to match the screenshot style
+  const inputStyle =
+    "w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:border-[#0052CC] focus:ring-4 focus:ring-blue-50 outline-none transition-all placeholder:text-slate-400";
+
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex items-center justify-center p-4 md:p-8 font-sans">
+    <div className="min-h-screen bg-[#F0F4F8] flex flex-col items-center justify-center p-4 font-sans">
+      {/* Top Navigation Bar style from screenshot */}
+      <div className="w-full max-w-4xl flex justify-between items-center mb-6 px-4">
+        <div className="flex items-center gap-2 text-[#0052CC] font-bold cursor-pointer">
+         <span>MEDIQ</span>
+        </div>
+        <div className="flex gap-6 text-[13px] font-medium text-slate-600">
+          <span
+            className="cursor-pointer hover:text-[#0052CC]"
+            onClick={() => setMode(mode === "login" ? "register" : "login")}
+          >
+            {mode === "login" ? "Request Access" : "Join as Partner"}
+          </span>
+          <span className="cursor-pointer hover:text-[#0052CC]">Support</span>
+        </div>
+      </div>
+
       <div
-        className={`w-full ${mode === "login" ? "max-w-5xl" : "max-w-4xl"} bg-white rounded-[40px] shadow-2xl border border-slate-100 flex flex-col md:flex-row overflow-hidden transition-all duration-500`}
+        className={`w-full ${mode === "login" ? "max-w-md" : "max-w-2xl"} bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden transition-all duration-500`}
       >
-        {/* Branding Side */}
-        <div
-          className={`${mode === "login" ? "lg:flex w-[40%]" : "hidden"} hidden bg-[#0052CC] p-12 flex-col justify-between text-white relative`}
-        >
-          <div className="z-10">
-            <div className="flex items-center gap-3 mb-16">
-              <img
-                src={icon}
-                alt="Logo"
-                className="w-8 h-8 bg-white/20 p-1 rounded-lg"
-              />
-              <span className="text-2xl font-black italic uppercase">
-                MEDIQ
-              </span>
+        <div className="p-8 md:p-10 text-center">
+          {/* Header Section */}
+          <div className="flex flex-col items-center mb-8">
+            <div className="w-12 h-12 bg-[#0052CC] rounded-xl flex items-center justify-center mb-4 shadow-lg shadow-blue-200 overflow-hidden">
+              <img src={logo} alt="" />
             </div>
-            <h1 className="text-5xl font-bold leading-tight mb-6">
-              Elevating <br /> Care Standard.
-            </h1>
-            <p className="text-blue-100/70 text-lg">
-              Intelligent ecosystem for healthcare professionals.
+            <h2 className="text-2xl font-bold text-slate-800">
+              {mode === "login" ? "Welcome back" : "Create your account"}
+            </h2>
+            <p className="text-slate-500 text-sm mt-1">
+              {mode === "login"
+                ? "Access your clinical dashboard and patient care sync."
+                : "Join the future of high-precision healthcare coordination."}
             </p>
           </div>
-          <div className="z-10 bg-white/10 backdrop-blur-md p-6 rounded-[32px] border border-white/10">
-            <div className="flex justify-between items-center text-sm font-bold">
-              <span>Security Verified</span>{" "}
-              <FiShield className="text-blue-300" />
-            </div>
-          </div>
-        </div>
 
-        {/* Form Container */}
-        <div className="flex-1 p-8 md:p-14 overflow-y-auto max-h-[90vh] scrollbar-hide">
-          <header className="flex justify-between items-center mb-10">
-            <h2 className="text-3xl font-black tracking-tight">
-              {mode === "login" ? "Welcome back" : "Create portal"}
-            </h2>
-            <button
-              onClick={() => setMode(mode === "login" ? "register" : "login")}
-              className="text-sm font-bold text-[#0052CC] flex items-center gap-2 hover:underline"
-            >
-              {mode === "login" ? "Create Account" : "Log In"} <FiArrowRight />
-            </button>
-          </header>
-
+          {/* Role Switcher */}
           {mode === "register" && (
-            <div className="inline-flex p-1 bg-slate-100 rounded-2xl mb-8 w-full max-w-xs">
+            <div className="flex p-1.5 bg-slate-100 rounded-xl mb-8 mx-auto w-full max-w-xs">
               {["PATIENT", "DOCTOR"].map((r) => (
                 <button
                   key={r}
                   type="button"
                   onClick={() => setRole(r)}
-                  className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all ${role === r ? "bg-white text-[#0052CC] shadow-sm" : "text-slate-500"}`}
+                  className={`flex-1 py-2 flex items-center justify-center gap-2 rounded-lg text-xs font-bold transition-all ${role === r ? "bg-[#0052CC] text-white shadow-md" : "text-slate-500 hover:bg-slate-200"}`}
                 >
-                  {r === "PATIENT" ? "Patient" : "Practitioner"}
+                  {r === "PATIENT" ? (
+                    <FiUser size={14} />
+                  ) : (
+                    <FiBriefcase size={14} />
+                  )}
+                  {r === "PATIENT" ? "Patient" : "Doctor"}
                 </button>
               ))}
             </div>
@@ -241,199 +244,168 @@ const AuthPage = () => {
             <div
               className={
                 mode === "register"
-                  ? "grid grid-cols-1 md:grid-cols-2 gap-4"
+                  ? "grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4"
                   : "space-y-4"
               }
             >
               {mode === "register" && (
-                <FormField icon={FiUser}>
-                  <Input
+                <FormField label="Full Name">
+                  <input
                     name="fullName"
-                    placeholder="Full Name"
+                    placeholder="Dr. Jane Smith"
                     value={formValues.fullName}
                     onChange={handleChange}
                     required
-                    className="pl-12"
+                    className={inputStyle}
                   />
                 </FormField>
               )}
 
-              <FormField icon={FiMail}>
-                <Input
+              <FormField
+                label={mode === "login" ? "Work Email" : "Email Address"}
+              >
+                <input
                   name="email"
                   type="email"
-                  placeholder="Email Address"
+                  placeholder="jane.smith@mediq.care"
                   value={formValues.email}
                   onChange={handleChange}
                   required
-                  className="pl-12"
+                  className={inputStyle}
                 />
               </FormField>
 
               {mode === "register" && (
                 <>
-                  <div className="grid grid-cols-2 gap-3">
-                    <FormField icon={FiActivity}>
-                      <Select
-                        name="gender"
-                        value={formValues.gender}
-                        onChange={handleChange}
-                        required
-                        className="pl-12"
-                      >
-                        <option value="">Gender</option>
-                        <option value="MALE">Male</option>
-                        <option value="FEMALE">Female</option>
-                      </Select>
-                    </FormField>
-                    <Input
+                  <FormField label="Gender">
+                    <select
+                      name="gender"
+                      value={formValues.gender}
+                      onChange={handleChange}
+                      required
+                      className={inputStyle}
+                    >
+                      <option value="">Select Gender</option>
+                      <option value="MALE">Male</option>
+                      <option value="FEMALE">Female</option>
+                    </select>
+                  </FormField>
+                  <FormField label="Age">
+                    <input
                       name="age"
                       type="number"
-                      placeholder="Age"
+                      placeholder="e.g. 32"
                       value={formValues.age}
                       onChange={handleChange}
-                      className="bg-slate-50"
+                      className={inputStyle}
                     />
-                  </div>
-                  <FormField icon={FiCalendar} label="Date of Birth">
-                    <Input
+                  </FormField>
+                  <FormField label="Date of Birth">
+                    <input
                       name="dob"
                       type="date"
                       value={formValues.dob}
                       onChange={handleChange}
                       required
-                      className="pl-12"
+                      className={inputStyle}
                     />
                   </FormField>
                 </>
               )}
 
-              {/* --- Doctor Specific Fields --- */}
+              {/* Doctor Specific Fields */}
               {mode === "register" && role === "DOCTOR" && (
-                <div className="col-span-1 md:col-span-2 pt-6 border-t space-y-4">
+                <div className="col-span-1 md:col-span-2 pt-4 mt-2 border-t border-slate-100 space-y-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <FiBriefcase className="text-blue-600" />
-                    <span className="text-xs font-bold uppercase text-slate-400">
-                      Professional Details
+                    <FiCheckCircle className="text-emerald-500" />
+                    <span className="text-[13px] font-bold text-slate-700">
+                      Professional Credentials
                     </span>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField icon={FiBookOpen}>
-                      <Input
+                    <FormField label="Medical Degree">
+                      <input
                         name="degree"
-                        placeholder="Medical Degree (e.g. MBBS, MD)"
+                        placeholder="e.g. MBBS, MD"
                         value={formValues.degree}
                         onChange={handleChange}
                         required
-                        className="pl-12"
+                        className={inputStyle}
                       />
                     </FormField>
-                    <FormField icon={FiBriefcase}>
-                      <Input
+                    <FormField label="Experience (Years)">
+                      <input
                         name="experience"
                         type="number"
-                        placeholder="Experience (in Years)"
+                        placeholder="10"
                         value={formValues.experience}
                         onChange={handleChange}
                         required
-                        className="pl-12"
+                        className={inputStyle}
                       />
                     </FormField>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField icon={FiDollarSign}>
-                      <Input
-                        name="consultationFee"
-                        type="number"
-                        placeholder="Consultation Fee (₹)"
-                        value={formValues.consultationFee}
-                        onChange={handleChange}
-                        required
-                        className="pl-12"
-                      />
-                    </FormField>
-                    <FormField icon={FiActivity}>
-                      <Select
+                    <FormField label="Specialization">
+                      <select
                         name="specialization"
                         value={formValues.specialization}
                         onChange={handleChange}
                         required
-                        className="pl-12"
+                        className={inputStyle}
                       >
-                        <option value="">Specialization</option>
+                        <option value="">Select Specialization</option>
                         {specializations.map((s) => (
                           <option key={s._id} value={s.name}>
                             {s.name}
                           </option>
                         ))}
-                      </Select>
+                      </select>
+                    </FormField>
+                    <FormField label="License Number">
+                      <input
+                        name="licenseNumber"
+                        placeholder="MD-9988-77"
+                        value={formValues.licenseNumber}
+                        onChange={handleChange}
+                        required
+                        className={inputStyle}
+                      />
                     </FormField>
                   </div>
 
-                  <FormField icon={FiMapPin}>
-                    <Input
+                  <FormField label="Clinic/Hospital Address">
+                    <input
                       name="hospitalAddress"
-                      placeholder="Clinic/Hospital Address"
+                      placeholder="Street name, City, State"
                       value={formValues.hospitalAddress}
                       onChange={handleChange}
                       required
-                      className="pl-12"
+                      className={inputStyle}
                     />
                   </FormField>
 
-                  <FormField icon={FiAlignLeft}>
-                    <textarea
-                      name="description"
-                      placeholder="Tell patients about yourself..."
-                      value={formValues.description}
-                      onChange={handleChange}
-                      className="w-full resize-none pl-12 pr-4 py-3 rounded-2xl border border-slate-100 bg-slate-50/50 text-sm focus:bg-white focus:ring-2 focus:ring-blue-100 outline-none min-h-[100px] transition-all"
-                    />
-                  </FormField>
-
-                  <FormField icon={FiAward} label="Identity Verification">
-                    <Input
-                      name="licenseNumber"
-                      placeholder="License Number"
-                      value={formValues.licenseNumber}
-                      onChange={handleChange}
-                      required
-                      className="pl-12"
-                    />
-                  </FormField>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <label className="border-2 border-dashed rounded-2xl p-4 flex flex-col items-center cursor-pointer hover:bg-slate-50">
-                      <input
-                        type="file"
-                        className="hidden"
-                        onChange={(e) => {
-                          const file = e.target.files[0];
-                          if (file) {
-                            setFiles((prev) => ({
-                              ...prev,
-                              profileImage: file,
-                            }));
-                            setPreview(URL.createObjectURL(file));
-                          }
-                        }}
-                      />
-                      {preview ? (
-                        <img
-                          src={preview}
-                          className="w-10 h-10 rounded-full object-cover"
-                        />
-                      ) : (
-                        <FiUploadCloud className="text-slate-400" size={20} />
-                      )}
-                      <span className="text-[10px] font-bold mt-1 text-slate-500">
-                        Avatar
-                      </span>
-                    </label>
-
-                    <label className="border-2 border-dashed rounded-2xl p-4 flex flex-col items-center cursor-pointer hover:bg-slate-50 relative">
+                  {/* ID Verification Box style from screenshot */}
+                  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 flex items-center justify-between mt-4 text-left">
+                    <div className="flex gap-4 items-center">
+                      <div className="w-12 h-12 bg-white rounded-lg border border-slate-200 flex items-center justify-center shadow-sm">
+                        <FiAward className="text-blue-600" size={24} />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-bold text-slate-800">
+                          Verify Identity
+                        </h4>
+                        <p className="text-[11px] text-slate-500 leading-tight max-w-[200px]">
+                          Upload a digital copy of your medical license for
+                          rapid AI verification.
+                        </p>
+                      </div>
+                    </div>
+                    <label
+                      className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${isDocVerified ? "bg-emerald-50 text-emerald-600" : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-100"}`}
+                    >
                       <input
                         type="file"
                         className="hidden"
@@ -441,17 +413,16 @@ const AuthPage = () => {
                         disabled={verifying}
                       />
                       {verifying ? (
-                        <Ripples size="20" color="#0052CC" />
+                        <Ripples size="16" color="#0052CC" />
                       ) : isDocVerified ? (
-                        <FiCheckCircle className="text-green-500" size={20} />
+                        <>
+                          <FiCheckCircle /> Verified
+                        </>
                       ) : (
-                        <FiShield className="text-slate-400" size={20} />
+                        <>
+                          <FiUploadCloud /> Upload Document
+                        </>
                       )}
-                      <span className="text-[10px] font-bold mt-1 text-slate-500 truncate w-full text-center">
-                        {isDocVerified
-                          ? "Verified ✅"
-                          : docPreview || "License PDF"}
-                      </span>
                     </label>
                   </div>
                 </div>
@@ -462,15 +433,24 @@ const AuthPage = () => {
                   mode === "register" ? "col-span-1 md:col-span-2" : "w-full"
                 }
               >
-                <FormField icon={FiLock}>
-                  <Input
+                <FormField
+                  label={mode === "login" ? "Security Key" : "Password"}
+                  extra={
+                    mode === "login" && (
+                      <span className="text-[11px] font-bold text-[#0052CC] cursor-pointer">
+                        Forgot?
+                      </span>
+                    )
+                  }
+                >
+                  <input
                     name="password"
                     type="password"
-                    placeholder="Password"
+                    placeholder="••••••••••••"
                     value={formValues.password}
                     onChange={handleChange}
                     required
-                    className="pl-12"
+                    className={inputStyle}
                   />
                 </FormField>
               </div>
@@ -483,17 +463,59 @@ const AuthPage = () => {
                 verifying ||
                 (mode === "register" && role === "DOCTOR" && !isDocVerified)
               }
-              className="w-full bg-[#0052CC] text-white py-3.5 rounded-2xl font-bold shadow-lg hover:bg-[#0747A6] transition-all disabled:opacity-50 flex items-center justify-center gap-3 mt-4"
+              className="w-full bg-[#0052CC] text-white py-3.5 rounded-xl font-bold shadow-lg shadow-blue-100 hover:bg-[#0747A6] transition-all disabled:opacity-50 flex items-center justify-center gap-3 mt-6"
             >
               {loading ? (
                 <Ripples size="25" color="#fff" />
               ) : mode === "login" ? (
-                "Sign In"
+                <>
+                  Continue to Workspace <FiArrowRight />
+                </>
               ) : (
-                "Register Now"
+                <>
+                  Create Professional Profile <FiArrowRight />
+                </>
               )}
             </button>
+
+            {/* Bottom links */}
+            <div className="pt-6 text-sm text-slate-500">
+              {mode === "login" ? (
+                <p>
+                  New to MEDIQ ecosystem?{" "}
+                  <span
+                    className="text-[#0052CC] font-bold cursor-pointer"
+                    onClick={() => setMode("register")}
+                  >
+                    Request Access
+                  </span>
+                </p>
+              ) : (
+                <p>
+                  Already have an account?{" "}
+                  <span
+                    className="text-[#0052CC] font-bold cursor-pointer"
+                    onClick={() => setMode("login")}
+                  >
+                    Log in here
+                  </span>
+                </p>
+              )}
+            </div>
           </form>
+        </div>
+      </div>
+
+      {/* Footer Branding from Screenshot */}
+      <div className="mt-8 flex gap-8 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+        <div className="flex items-center gap-2">
+          <FiShield /> End-to-End Encryption
+        </div>
+        <div className="flex items-center gap-2">
+          <FiActivity /> Instant AI Triage
+        </div>
+        <div className="flex items-center gap-2">
+          <FiCheckCircle /> Certified Trust
         </div>
       </div>
     </div>
