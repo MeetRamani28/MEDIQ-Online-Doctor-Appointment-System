@@ -8,6 +8,7 @@ import {
   UserRound,
   LogOut,
   X,
+  ChevronRight,
 } from "lucide-react";
 import { logoutUser } from "../../features/auth/authThunks";
 import logo from "/images/icon.png";
@@ -31,47 +32,47 @@ const DoctorSidebar = ({ open, setOpen }) => {
   };
 
   const getInitials = (name) => {
-    if (!name) return "D";
-    const names = name.split(" ");
-    return names.length > 1
-      ? names[0][0].toUpperCase() + names[1][0].toUpperCase()
-      : name[0].toUpperCase();
+    if (!name) return "Dr";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
   };
 
   return (
     <>
+      {/* Overlay for mobile */}
       {open && (
         <div
           onClick={() => setOpen(false)}
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-40 lg:hidden transition-all duration-300"
         />
       )}
 
       <aside
         className={`
-          fixed top-0 left-0 z-50 h-screen w-64 bg-white shadow-xl border-r border-gray-100
-          transform transition-transform duration-300
+          fixed top-0 left-0 z-50 h-screen w-72 bg-white shadow-2xl border-r border-slate-100
+          flex flex-col transition-all duration-500 ease-in-out
           ${open ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0
         `}
       >
-        <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-100">
-          {user?.doctorProfile?.profileImage ? (
-            <img
-              src={logo}
-              alt={user.fullName}
-              className="w-10 h-10 rounded-full object-cover shadow-md"
-            />
-          ) : (
-            <div className="w-10 h-10 rounded-full bg-linear-to-tr from-[#00bfa5] to-[#0097a7] text-white flex items-center justify-center font-bold shadow-md text-sm">
-              {getInitials(user?.fullName)}
-            </div>
-          )}
-          <h1 className="text-2xl font-bold text-[#0097a7] tracking-wide whitespace-nowrap">
+        {/* Logo Section */}
+        <div className="flex items-center gap-3 px-8 py-8">
+          <div className="p-2 bg-cyan-50 rounded-xl">
+            <img src={logo} alt="Logo" className="w-8 h-8 object-contain" />
+          </div>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-600 to-teal-500 bg-clip-text text-transparent tracking-tight">
             MEDIQ
           </h1>
         </div>
 
-        <nav className="px-3 py-6 space-y-1">
+        {/* Navigation Menu */}
+        <nav className="flex-1 px-4 space-y-2 mt-4">
+          <p className="px-4 text-[11px] font-bold text-slate-400 uppercase tracking-[2px] mb-4">
+            Main Menu
+          </p>
           {menu.map(({ name, path, icon: Icon }) => {
             const isActive = pathname === path;
 
@@ -80,43 +81,47 @@ const DoctorSidebar = ({ open, setOpen }) => {
                 key={path}
                 to={path}
                 onClick={() => setOpen(false)}
-                className={`
-                  relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+                className={({ isActive }) => `
+                  group relative flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all duration-300
                   ${
                     isActive
-                      ? "bg-linear-to-r from-[#00bfa5] to-[#0097a7] text-white shadow-lg font-semibold"
-                      : "text-gray-700 hover:bg-gray-100 hover:text-[#0097a7]"
+                      ? "bg-gradient-to-r from-cyan-600 to-teal-500 text-white shadow-lg shadow-cyan-200"
+                      : "text-slate-500 hover:bg-slate-50 hover:text-cyan-600"
                   }
                 `}
               >
+                <div className="flex items-center gap-3">
+                  <Icon
+                    size={22}
+                    className={`transition-colors duration-300 ${isActive ? "text-white" : "text-slate-400 group-hover:text-cyan-600"}`}
+                  />
+                  <span className="font-medium text-[15px]">{name}</span>
+                </div>
                 {isActive && (
-                  <span className="absolute left-0 top-2 bottom-2 w-1 bg-white rounded-r-md" />
+                  <ChevronRight size={16} className="text-white/70" />
                 )}
-                <Icon
-                  size={20}
-                  className={isActive ? "text-white" : "text-gray-500"}
-                />
-                <span className="text-sm">{name}</span>
               </NavLink>
             );
           })}
         </nav>
 
-        <div className="absolute bottom-6 w-full px-6">
+        {/* Bottom Section - User Profile & Logout */}
+        <div className="p-4 border-t border-slate-50 bg-slate-50/50">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-red-500 hover:text-white transition-all shadow-sm"
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-slate-500 font-semibold hover:bg-red-50 hover:text-red-600 transition-all duration-300 border border-transparent hover:border-red-100"
           >
-            <LogOut size={20} />
-            Logout
+            <LogOut size={18} />
+            <span>Logout</span>
           </button>
         </div>
 
+        {/* Mobile Close Button */}
         <button
           onClick={() => setOpen(false)}
-          className="lg:hidden absolute top-5 right-5 text-gray-600 hover:text-gray-800"
+          className="lg:hidden absolute top-7 right-6 p-1.5 bg-slate-50 text-slate-400 rounded-lg hover:text-slate-600 transition-colors"
         >
-          <X size={22} />
+          <X size={20} />
         </button>
       </aside>
     </>
