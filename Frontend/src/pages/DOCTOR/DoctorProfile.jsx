@@ -232,7 +232,7 @@ const DoctorProfile = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="group flex items-center gap-3 px-10 py-4 rounded-2xl bg-slate-900 text-white font-bold text-xs uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-xl shadow-slate-200 hover:shadow-emerald-100 active:scale-95 disabled:opacity-50"
+                className="group flex items-center gap-3 px-10 py-4 rounded-2xl bg-gradient-to-r from-cyan-600 to-teal-500 text-white font-bold text-xs uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-xl shadow-slate-200 hover:shadow-emerald-100 active:scale-95 disabled:opacity-50"
               >
                 {loading ? (
                   "Syncing..."

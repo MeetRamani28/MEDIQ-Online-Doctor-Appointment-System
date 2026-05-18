@@ -7,12 +7,16 @@ const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#F7FBFC] flex">
+    <div className="h-screen w-screen bg-[#f8fafc] flex overflow-hidden antialiased text-slate-800">
+      {/* Structural Left Navigation Anchor Panel */}
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
 
-      <div className="flex-1 lg:ml-64 flex flex-col">
+      {/* Primary Dynamic Display Workspace */}
+      <div className="flex-1 lg:pl-64 flex flex-col min-w-0 overflow-hidden">
         <Topbar setSidebarOpen={setSidebarOpen} />
-        <main className="p-6 flex-1">
+
+        {/* Core Screen Canvas Wrapper */}
+        <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 lg:p-8">
           <Outlet />
         </main>
       </div>

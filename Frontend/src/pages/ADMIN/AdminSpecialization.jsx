@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -12,15 +13,28 @@ import {
   clearSpecializationSuccess,
 } from "../../features/specialization/specializationSlice";
 
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { Ripples } from "ldrs/react";
 import "ldrs/react/Ripples.css";
+import {
+  Plus,
+  Pencil,
+  X,
+  Layers,
+  Activity,
+  ShieldCheck,
+  ShieldAlert,
+} from "lucide-react";
 
 const AdminSpecialization = () => {
   const dispatch = useDispatch();
-  const { list, loading, error, successMessage } = useSelector(
-    (state) => state.specialization
-  );
+  const {
+    list = [],
+    loading,
+    error,
+    successMessage,
+  } = useSelector((state) => state.specialization);
 
   const [openModal, setOpenModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -72,133 +86,198 @@ const AdminSpecialization = () => {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 to-indigo-50 p-4 sm:p-6 lg:p-8">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8 selection:bg-indigo-50 animate-fade-in">
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar
+        shadow-sm
+      />
+
+      {/* Main Command Header Strip */}
+      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 pb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Specializations</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Manage doctor specializations
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Specialization Registry
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Configure, manage, and toggle status channels for domain clinical
+            specializations.
           </p>
         </div>
-
         <button
           onClick={openCreate}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl shadow-lg transition active:scale-95"
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-600 to-teal-500 text-white font-semibold text-sm rounded-xl shadow-xs hover:bg-indigo-600 active:scale-95 transition-all duration-200"
         >
-          + Add Specialization
+          <Plus size={16} strokeWidth={2.5} /> Add Specialization
         </button>
-      </div>
+      </header>
 
+      {/* Loading Canvas State */}
       {loading && (
-        <div className="flex justify-center py-24">
-          <Ripples size="70" speed="2" color="#4f46e5" />
+        <div className="flex flex-col justify-center items-center h-[40vh] bg-white border border-slate-100 rounded-3xl shadow-xs">
+          <Ripples size={55} speed={2} color="#4f46e5" />
+          <p className="mt-5 text-slate-500 text-xs font-semibold tracking-widest uppercase animate-pulse">
+            Sourcing dynamic domains map...
+          </p>
         </div>
       )}
 
+      {/* Grid Layout Core */}
       {!loading && (
-        <div className="bg-white/80 backdrop-blur rounded-3xl shadow-xl overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-100/70 text-gray-600">
-              <tr>
-                <th className="px-6 py-4 text-left">Specialization</th>
-                <th className="px-6 py-4 text-left hidden sm:table-cell">
-                  Description
-                </th>
-                <th className="px-6 py-4 text-center">Active</th>
-                <th className="px-6 py-4 text-center">Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
+        <>
+          {list.length === 0 ? (
+            <div className="text-center py-24 bg-white border border-slate-100 rounded-3xl shadow-xs">
+              <div className="bg-slate-50 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-slate-100 shadow-inner">
+                <Layers className="text-slate-300" size={26} />
+              </div>
+              <h3 className="text-slate-800 font-bold text-sm">
+                No Domains Configured
+              </h3>
+              <p className="text-slate-400 text-xs max-w-xs mx-auto mt-1 leading-relaxed">
+                No verified medical domain structures or practitioner
+                specialization maps are currently registered.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {list.map((item) => (
-                <tr
+                <div
                   key={item._id}
-                  className="border-b last:border-none hover:bg-indigo-50/40 transition"
+                  className="bg-white border border-slate-100 rounded-2xl p-5 shadow-xs flex flex-col justify-between transition-all duration-300 hover:shadow-md hover:border-slate-200 group"
                 >
-                  <td className="px-6 py-4 font-semibold text-gray-900">
-                    {item.name}
-                  </td>
+                  <div className="space-y-3.5">
+                    {/* Card Title Header Layout */}
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-100/60 text-indigo-700 flex items-center justify-center shrink-0 shadow-xs">
+                          <Activity size={15} strokeWidth={2.5} />
+                        </div>
+                        <h3 className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors truncate">
+                          {item.name}
+                        </h3>
+                      </div>
 
-                  <td className="px-6 py-4 text-gray-500 hidden sm:table-cell">
-                    {item.description || "—"}
-                  </td>
+                      {/* Translucent Active Label Flag */}
+                      <span
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-bold tracking-wider uppercase border ${
+                          item.isActive
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                            : "bg-slate-50 text-slate-400 border-slate-100"
+                        }`}
+                      >
+                        {item.isActive ? "Active Routing" : "Suspended"}
+                      </span>
+                    </div>
 
-                  <td className="px-6 py-4 text-center">
-                    <ToggleSwitch
-                      checked={item.isActive}
-                      onChange={() =>
-                        dispatch(toggleSpecializationStatus(item._id))
-                      }
-                    />
-                  </td>
+                    {/* Block Content Segment Description */}
+                    <div className="bg-slate-50/50 border border-slate-50 rounded-xl p-3.5 h-20 overflow-hidden">
+                      <p className="text-xs font-medium text-slate-500 leading-relaxed line-clamp-3">
+                        {item.description ||
+                          "No public route parameters or biography configured for this specialty group node."}
+                      </p>
+                    </div>
+                  </div>
 
-                  <td className="px-6 py-4 text-center">
+                  {/* Operational Settings Bar Layout */}
+                  <div className="flex items-center justify-between mt-5 pt-3 border-t border-slate-50">
+                    {/* Toggle Control Area */}
+                    <div className="flex items-center gap-2">
+                      <ToggleSwitch
+                        checked={item.isActive}
+                        onChange={() =>
+                          dispatch(toggleSpecializationStatus(item._id))
+                        }
+                      />
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+                        Registry Flow
+                      </span>
+                    </div>
+
+                    {/* Modification Trigger Utility Button */}
                     <button
                       onClick={() => openEdit(item)}
-                      className="text-indigo-600 font-medium hover:underline"
+                      className="p-2 text-slate-400 hover:text-slate-800 bg-slate-50 hover:bg-slate-100 border border-slate-100 rounded-lg transition-colors shadow-2xs active:scale-95"
+                      title="Modify Specialty Spec"
                     >
-                      Edit
+                      <Pencil size={13} />
                     </button>
-                  </td>
-                </tr>
+                  </div>
+                </div>
               ))}
-
-              {list.length === 0 && (
-                <tr>
-                  <td colSpan="4" className="py-14 text-center text-gray-400">
-                    No specializations found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+            </div>
+          )}
+        </>
       )}
 
+      {/* Glassmorphic Layer Form Modal Container */}
       {openModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white w-[94%] sm:w-105 rounded-3xl p-6 shadow-2xl animate-fadeIn">
-            <h2 className="text-xl font-bold mb-6">
-              {editingId ? "Edit Specialization" : "Add Specialization"}
-            </h2>
-
-            <form onSubmit={submitHandler} className="space-y-5">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white w-full max-w-md rounded-2xl p-6 overflow-y-auto max-h-[85vh] border border-slate-100 shadow-xl">
+            {/* Modal Control Header Block */}
+            <div className="flex justify-between items-center mb-5 border-b border-slate-100 pb-3">
               <div>
-                <label className="text-sm font-medium">Name</label>
+                <h2 className="text-md font-bold text-slate-900">
+                  {editingId
+                    ? "Modify Domain Parameters"
+                    : "Create Specialization Node"}
+                </h2>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Setup technical classifications cleanly
+                </p>
+              </div>
+              <button
+                onClick={closeModal}
+                className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-50 border border-slate-100 rounded-lg transition-all active:scale-95"
+              >
+                <X size={15} strokeWidth={2.5} />
+              </button>
+            </div>
+
+            <form onSubmit={submitHandler} className="space-y-4 text-sm">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                  Domain Classification Name
+                </label>
                 <input
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full mt-1 px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
-                  placeholder="Cardiology"
+                  type="text"
+                  className="w-full border border-slate-200 focus:border-indigo-500 rounded-xl px-4 py-2 outline-none shadow-inner transition-all font-medium text-slate-800"
+                  placeholder="e.g. Ophthalmology, Neurology"
+                  required
                 />
               </div>
 
-              <div>
-                <label className="text-sm font-medium">Description</label>
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                  Biography Description
+                </label>
                 <textarea
                   rows="3"
                   value={form.description}
                   onChange={(e) =>
                     setForm({ ...form, description: e.target.value })
                   }
-                  className="w-full mt-1 px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
-                  placeholder="Heart related treatments"
+                  className="w-full border border-slate-200 focus:border-indigo-500 rounded-xl px-4 py-2 outline-none shadow-inner font-medium text-slate-800 resize-none"
+                  placeholder="Describe treatment metrics and field focus parameters..."
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-4">
+              {/* Action Button Strip */}
+              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="px-4 py-2 rounded-xl border hover:bg-gray-100"
+                  className="px-4 py-2 text-xs font-bold rounded-xl border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 active:scale-95 transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow"
+                  className="px-5 py-2 text-xs font-bold rounded-xl bg-slate-900 text-white hover:bg-indigo-600 active:scale-95 transition-all shadow-xs"
                 >
-                  {editingId ? "Update" : "Create"}
+                  {editingId ? "Commit Domain Changes" : "Confirm Entry Setup"}
                 </button>
               </div>
             </form>

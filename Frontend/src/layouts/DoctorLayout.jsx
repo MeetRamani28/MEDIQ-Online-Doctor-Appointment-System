@@ -21,8 +21,7 @@ const DoctorLayout = () => {
           <DoctorTopbar setSidebarOpen={setSidebarOpen} />
         </header>
 
-        {/* Content Wrapper */}
-        <main className="flex-1 p-4 md:p-8 lg:p-10 max-w-[1600px] mx-auto w-full">
+        <main className="flex-1 p-4 md:p-8 lg:p-4 max-w-[1600px] mx-auto w-full">
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <Outlet />
           </div>

@@ -228,7 +228,7 @@ const DoctorDashboard = () => {
 
           <button
             onClick={() => navigate("/doctor/medicalrecord")}
-            className="w-full mt-6 md:mt-10 py-3 md:py-4 bg-slate-900 text-white rounded-2xl font-bold text-[9px] md:text-[10px] uppercase tracking-[0.2em] hover:bg-slate-800 transition-all shadow-lg active:scale-95"
+            className="w-full cursor-pointer mt-6 md:mt-10 py-3 md:py-4 bg-gradient-to-r from-cyan-600 to-teal-500 text-white rounded-2xl font-bold text-[9px] md:text-[10px] uppercase tracking-[0.2em] hover:bg-slate-800 transition-all shadow-lg active:scale-95"
           >
             Audit Archive
           </button>

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -8,7 +9,18 @@ import {
   updateDoctor,
 } from "../../features/admin/adminThunks";
 import { fetchSpecializations } from "../../features/specialization/specializationThunks";
-import { Plus, Pencil, Trash2, X, CheckCircle, XCircle } from "lucide-react";
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  X,
+  ShieldCheck,
+  ShieldAlert,
+  Award,
+  Banknote,
+  MapPin,
+  Layers,
+} from "lucide-react";
 import getImageSrc from "../../components/atoms/getImageSrc";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -19,7 +31,7 @@ const AdminDoctors = () => {
   const dispatch = useDispatch();
   const { doctors = [], loading, error } = useSelector((state) => state.admin);
   const { list: specializations } = useSelector(
-    (state) => state.specialization
+    (state) => state.specialization,
   );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,15 +52,13 @@ const AdminDoctors = () => {
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const doctorsPerPage = 5;
+  const doctorsPerPage = 6; // Shifted to 6 for grid balance
 
-  // Fetch doctors and specializations on mount
   useEffect(() => {
     dispatch(fetchAllDoctors());
     dispatch(fetchSpecializations());
   }, [dispatch]);
 
-  // Open modal for adding/editing
   const handleOpenModal = (doctor = null) => {
     if (doctor) {
       setEditingId(doctor._id);
@@ -87,7 +97,6 @@ const AdminDoctors = () => {
     setIsModalOpen(true);
   };
 
-  // Handle input changes
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
     if (type === "file") {
@@ -100,7 +109,6 @@ const AdminDoctors = () => {
     }
   };
 
-  // Submit form (add/update)
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData();
@@ -109,7 +117,6 @@ const AdminDoctors = () => {
     });
 
     if (editingId) {
-      // Optimistic update for edit
       const tempDoctor = {
         _id: editingId,
         fullName: formData.fullName,
@@ -131,14 +138,14 @@ const AdminDoctors = () => {
       toast.info("Saving changes...");
       try {
         await dispatch(
-          updateDoctor({ id: editingId, doctorData: data })
+          updateDoctor({ id: editingId, doctorData: data }),
         ).unwrap();
         toast.success("Doctor updated successfully!");
       } catch {
-        toast.error("Update failed. Refresh to see latest data.");
+        toast.error("Update failed. Re-syncing system data.");
+        dispatch(fetchAllDoctors());
       }
     } else {
-      // Optimistic update for add
       const tempId = Date.now();
       const tempDoctor = {
         _id: tempId,
@@ -158,14 +165,14 @@ const AdminDoctors = () => {
       };
       dispatch({ type: "admin/addDoctorOptimistic", payload: tempDoctor });
       setIsModalOpen(false);
-      toast.info("Saving new doctor...");
+      toast.info("Saving new practitioner...");
       try {
         const result = await dispatch(addDoctor(data)).unwrap();
         dispatch({
           type: "admin/replaceTempDoctor",
           payload: { tempId, doctor: result },
         });
-        toast.success("Doctor added successfully!");
+        toast.success("Doctor registered successfully!");
       } catch {
         toast.error("Failed to add doctor.");
         dispatch({ type: "admin/removeTempDoctor", payload: tempId });
@@ -173,154 +180,206 @@ const AdminDoctors = () => {
     }
   };
 
-  // Delete doctor
   const handleDelete = async (id) => {
     dispatch({ type: "admin/deleteDoctorOptimistic", payload: id });
-    toast.info("Deleting doctor...");
+    toast.info("Removing dynamic record...");
     try {
       await dispatch(deleteDoctor(id)).unwrap();
-      toast.success("Doctor deleted successfully!");
+      toast.success("Doctor file removed from stream.");
     } catch {
-      toast.error("Failed to delete doctor.");
+      toast.error("Failed to clear file node.");
       dispatch(fetchAllDoctors());
     }
   };
 
-  // Toggle doctor active status
   const handleToggleStatus = async (id) => {
     dispatch({ type: "admin/toggleDoctorOptimistic", payload: id });
     try {
       await dispatch(toggleDoctorStatus(id)).unwrap();
-      toast.info("Doctor status updated!");
+      toast.info("Routing access profile modified.");
     } catch {
-      toast.error("Failed to update status.");
+      toast.error("Failed to shift state configuration.");
       dispatch(fetchAllDoctors());
     }
   };
 
-  // Pagination logic
+  // Pagination bounds calculation
   const indexOfLastDoctor = currentPage * doctorsPerPage;
   const indexOfFirstDoctor = indexOfLastDoctor - doctorsPerPage;
   const currentDoctors = doctors.slice(indexOfFirstDoctor, indexOfLastDoctor);
   const totalPages = Math.ceil(doctors.length / doctorsPerPage);
 
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
-      <ToastContainer position="top-right" autoClose={2000} />
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8 selection:bg-teal-50">
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar
+        shadow-sm
+      />
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 sm:mb-8 gap-4 sm:gap-0">
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-800">
-          Doctor Management
-        </h1>
+      {/* Main Command Header Strip */}
+      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 pb-6">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Practitioner Directory
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Configure system status, availability lineup, and specialized access
+            nodes.
+          </p>
+        </div>
         <button
           onClick={() => handleOpenModal()}
-          className="bg-linear-to-r from-teal-500 to-cyan-500 text-white px-5 py-2 rounded-lg flex items-center gap-2 shadow-lg hover:scale-105 transition transform w-full sm:w-auto justify-center"
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-600 to-teal-500 text-white font-semibold text-sm rounded-xl shadow-sm hover:bg-teal-600 active:scale-95 transition-all duration-200"
         >
-          <Plus size={20} /> Add New Doctor
+          <Plus size={16} strokeWidth={2.5} /> Register New Doctor
         </button>
-      </div>
+      </header>
 
-      {/* Loading */}
+      {/* Loading Canvas state */}
       {loading && (
-        <div className="flex flex-col justify-center items-center h-96">
-          <Ripples size={80} speed={2} color="#0097a7" />
-          <p className="mt-4 text-[#0097a7] font-medium animate-pulse">
-            Syncing Doctors data...
+        <div className="flex flex-col justify-center items-center h-[40vh] bg-white border border-slate-100 rounded-3xl shadow-xs">
+          <Ripples size={55} speed={2} color="#0d9488" />
+          <p className="mt-5 text-slate-500 text-xs font-semibold tracking-widest uppercase animate-pulse">
+            Sourcing System Registry...
           </p>
         </div>
       )}
 
-      {/* Error */}
+      {/* Exceptional Alert Canvas */}
       {error && (
-        <div className="bg-red-50 border-l-4 border-red-500 p-4 my-6 rounded-r-lg">
-          <div className="flex items-center">
-            <p className="text-red-700 font-medium">{error}</p>
+        <div className="bg-rose-50 border-l-4 border-rose-500 p-4 rounded-r-xl shadow-xs">
+          <div className="flex gap-3 items-center">
+            <div className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping" />
+            <p className="text-rose-900 font-medium text-sm">{error}</p>
           </div>
         </div>
       )}
 
-      {/* Doctors Table */}
+      {/* Modern Asymmetric Profiler Card-Grid System */}
       {!loading && currentDoctors.length > 0 && (
-        <div className="overflow-x-auto bg-white rounded-xl shadow-lg border border-gray-100">
-          <table className="w-full text-left border-collapse min-w-150">
-            <thead className="bg-gray-50 text-gray-600 text-sm uppercase tracking-wider">
-              <tr>
-                <th className="p-4 font-semibold">Doctor Info</th>
-                <th className="p-4 font-semibold">Experience</th>
-                <th className="p-4 font-semibold">Status</th>
-                <th className="p-4 font-semibold text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {currentDoctors.map((doc) => (
-                <tr key={doc._id} className="hover:bg-gray-50 transition">
-                  <td className="p-4 flex items-center gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {currentDoctors.map((doc) => (
+            <div
+              key={doc._id}
+              className="bg-white border border-slate-100 rounded-2xl p-5 shadow-xs flex flex-col justify-between transition-all duration-300 hover:shadow-md hover:border-slate-200 group"
+            >
+              {/* Header Structural Wrapper */}
+              <div className="space-y-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3.5">
                     <img
                       src={getImageSrc(doc.doctorProfile?.profileImage)}
                       alt={doc.fullName}
-                      className="w-12 h-12 rounded-full object-cover border"
+                      className="w-14 h-14 rounded-xl object-cover border border-slate-100 shadow-inner group-hover:scale-102 transition-transform duration-300"
                     />
-                    <div className="flex flex-col">
-                      <p className="font-bold text-gray-800">{doc.fullName}</p>
-                      <p className="text-sm text-gray-500">{doc.email}</p>
-                      <p className="text-xs text-gray-400">
-                        {doc.doctorProfile?.degree}
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-900 tracking-tight group-hover:text-teal-600 transition-colors">
+                        {doc.fullName}
+                      </h3>
+                      <p className="text-xs text-slate-400 mt-0.5 font-medium">
+                        {doc.email}
                       </p>
                     </div>
-                  </td>
-                  <td className="p-4 text-sm text-gray-600">
-                    {doc.doctorProfile?.experience || "N/A"} Yrs
-                  </td>
-                  <td className="p-4">
-                    <button
-                      onClick={() => handleToggleStatus(doc._id)}
-                      className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold transition ${
-                        doc.doctorProfile?.isActive
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
-                    >
-                      {doc.doctorProfile?.isActive ? (
-                        <CheckCircle size={14} />
-                      ) : (
-                        <XCircle size={14} />
-                      )}
-                      {doc.doctorProfile?.isActive ? "Active" : "Inactive"}
-                    </button>
-                  </td>
-                  <td className="p-4 text-right flex justify-end gap-2">
-                    <button
-                      onClick={() => handleOpenModal(doc)}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
-                    >
-                      <Pencil size={18} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(doc._id)}
-                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </div>
+
+                  {/* Operational Status Switch Node */}
+                  <button
+                    onClick={() => handleToggleStatus(doc._id)}
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase border transition-all ${
+                      doc.doctorProfile?.isActive
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100"
+                        : "bg-rose-50 text-rose-700 border-rose-100 hover:bg-rose-100"
+                    }`}
+                  >
+                    {doc.doctorProfile?.isActive ? (
+                      <ShieldCheck size={12} strokeWidth={2.5} />
+                    ) : (
+                      <ShieldAlert size={12} strokeWidth={2.5} />
+                    )}
+                    {doc.doctorProfile?.isActive ? "Active" : "Halted"}
+                  </button>
+                </div>
+
+                {/* Technical Credentials Tag Pill Node */}
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-50 border border-slate-100 text-slate-500 font-bold text-[10px] uppercase">
+                    <Award size={10} /> {doc.doctorProfile?.degree || "N/A"}
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-teal-50/60 border border-teal-100/60 text-teal-700 font-bold text-[10px] uppercase">
+                    <Layers size={10} />{" "}
+                    {specializations.find(
+                      (s) => s._id === doc.doctorProfile?.specialization?._id,
+                    )?.name || "General Route"}
+                  </span>
+                </div>
+
+                {/* Metadata Field Block */}
+                <div className="bg-slate-50/50 border border-slate-50 rounded-xl p-3 space-y-2.5 text-xs text-slate-600">
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-400 font-semibold uppercase tracking-wider text-[9px]">
+                      Clinical Seniority
+                    </span>
+                    <span className="font-bold text-slate-700">
+                      {doc.doctorProfile?.experience || "0"} Active Years
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-400 font-semibold uppercase tracking-wider text-[9px]">
+                      Consultation Fee
+                    </span>
+                    <span className="font-bold text-slate-800 inline-flex items-center gap-0.5">
+                      <Banknote size={12} className="text-slate-400" /> ₹
+                      {doc.doctorProfile?.consultationFee || "0"}
+                    </span>
+                  </div>
+                  <div className="flex gap-2 pt-1 border-t border-slate-100">
+                    <MapPin
+                      size={13}
+                      className="text-slate-400 shrink-0 mt-0.5"
+                    />
+                    <p className="text-slate-500 line-clamp-1 font-medium">
+                      {doc.doctorProfile?.hospitalAddress ||
+                        "No Anchor Address Configured"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Utility Form Action Bar */}
+              <div className="flex items-center justify-end gap-2 mt-5 pt-3 border-t border-slate-50">
+                <button
+                  onClick={() => handleOpenModal(doc)}
+                  className="p-2 text-slate-400 hover:text-slate-800 bg-slate-50 hover:bg-slate-100 border border-slate-100 rounded-lg transition-colors shadow-xs active:scale-95"
+                  title="Modify Practitioner Specs"
+                >
+                  <Pencil size={14} />
+                </button>
+                <button
+                  onClick={() => handleDelete(doc._id)}
+                  className="p-2 text-slate-400 hover:text-rose-600 bg-slate-50 hover:bg-rose-50 border border-slate-100 hover:border-rose-100 rounded-lg transition-colors shadow-xs active:scale-95"
+                  title="De-register Record Node"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
-      {/* Pagination */}
+      {/* Pagination Command Cluster */}
       {doctors.length > doctorsPerPage && (
-        <div className="flex flex-wrap justify-center mt-4 gap-2">
+        <div className="flex justify-center items-center gap-1.5 pt-6 border-t border-slate-100">
           {[...Array(totalPages)].map((_, i) => (
             <button
               key={i + 1}
               onClick={() => setCurrentPage(i + 1)}
-              className={`px-4 py-1 rounded-md font-medium border transition ${
+              className={`px-3 py-1 text-xs font-bold rounded-lg border transition-all ${
                 currentPage === i + 1
-                  ? "bg-teal-500 text-white"
-                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                  ? "bg-gradient-to-r from-cyan-600 to-teal-500 text-white shadow-xs"
+                  : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:border-slate-300"
               }`}
             >
               {i + 1}
@@ -329,150 +388,230 @@ const AdminDoctors = () => {
         </div>
       )}
 
-      {/* Modal */}
+      {/* Glassmorphic Layer Modal Dashboard Form */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl p-6 overflow-y-auto max-h-[90vh]">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">
-                {editingId ? "Edit Doctor" : "Register Doctor"}
-              </h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4 animate-fade-in">
+          <div className="bg-white w-full max-w-2xl rounded-2xl shadow-xl p-6 overflow-y-auto max-h-[85vh] border border-slate-100">
+            {/* Modal Heading Control */}
+            <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
+              <div>
+                <h2 className="text-lg font-bold text-slate-900">
+                  {editingId
+                    ? "Modify Practitioner Parameters"
+                    : "System Core Registration"}
+                </h2>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Fill out registry parameters securely
+                </p>
+              </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-50 border border-slate-100 rounded-lg transition-all active:scale-95"
               >
-                <X size={28} />
+                <X size={16} strokeWidth={2.5} />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <input
-                  type="text"
-                  name="fullName"
-                  placeholder="Full Name"
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-teal-400 outline-none"
-                  required
-                />
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-teal-400 outline-none"
-                  required
-                />
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="Password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-teal-400 outline-none"
-                />
-                <input
-                  type="text"
-                  name="degree"
-                  placeholder="Degree"
-                  value={formData.degree}
-                  onChange={handleChange}
-                  className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-teal-400 outline-none"
-                />
-                <input
-                  type="number"
-                  name="experience"
-                  placeholder="Experience (Yrs)"
-                  value={formData.experience}
-                  onChange={handleChange}
-                  className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-teal-400 outline-none"
-                />
-                <input
-                  type="number"
-                  name="consultationFee"
-                  placeholder="Consultation Fee"
-                  value={formData.consultationFee}
-                  onChange={handleChange}
-                  className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-teal-400 outline-none"
-                />
-                <input
-                  type="number"
-                  name="maxAppointmentsPerDay"
-                  placeholder="Max Appointments/Day"
-                  value={formData.maxAppointmentsPerDay}
-                  onChange={handleChange}
-                  className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-teal-400 outline-none"
-                />
-                <input
-                  type="text"
-                  name="hospitalAddress"
-                  placeholder="Hospital Address"
-                  value={formData.hospitalAddress}
-                  onChange={handleChange}
-                  className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-teal-400 outline-none col-span-2"
-                />
-                <select
-                  name="specialization"
-                  value={formData.specialization}
-                  onChange={handleChange}
-                  className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-teal-400 outline-none"
-                  required
-                >
-                  <option value="">Select Specialization</option>
-                  {specializations.map((s) => (
-                    <option key={s._id} value={s._id}>
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
+            <form onSubmit={handleSubmit} className="space-y-5 text-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    name="fullName"
+                    placeholder="e.g. Dr. Jane Smith"
+                    value={formData.fullName}
+                    onChange={handleChange}
+                    className="w-full border border-slate-200 focus:border-teal-500 rounded-xl px-4 py-2 outline-none shadow-inner transition-all font-medium text-slate-800"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                    Identity Email
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="practitioner@system.com"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full border border-slate-200 focus:border-teal-500 rounded-xl px-4 py-2 outline-none shadow-inner transition-all font-medium text-slate-800"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                    Routing Access Password
+                  </label>
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder={
+                      editingId
+                        ? "•••••••• (Leave blank to keep configuration)"
+                        : "Secure entry validation"
+                    }
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="w-full border border-slate-200 focus:border-teal-500 rounded-xl px-4 py-2 outline-none shadow-inner transition-all font-medium text-slate-800"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                    Degree Badge
+                  </label>
+                  <input
+                    type="text"
+                    name="degree"
+                    placeholder="MD, MBBS, MS, PhD"
+                    value={formData.degree}
+                    onChange={handleChange}
+                    className="w-full border border-slate-200 focus:border-teal-500 rounded-xl px-4 py-2 outline-none shadow-inner transition-all font-medium text-slate-800"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                    Experience Bound (Yrs)
+                  </label>
+                  <input
+                    type="number"
+                    name="experience"
+                    placeholder="Years active"
+                    value={formData.experience}
+                    onChange={handleChange}
+                    className="w-full border border-slate-200 focus:border-teal-500 rounded-xl px-4 py-2 outline-none shadow-inner transition-all font-medium text-slate-800"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                    Consultation Rate (INR)
+                  </label>
+                  <input
+                    type="number"
+                    name="consultationFee"
+                    placeholder="Fee index"
+                    value={formData.consultationFee}
+                    onChange={handleChange}
+                    className="w-full border border-slate-200 focus:border-teal-500 rounded-xl px-4 py-2 outline-none shadow-inner transition-all font-medium text-slate-800"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                    Intake Limit/Day
+                  </label>
+                  <input
+                    type="number"
+                    name="maxAppointmentsPerDay"
+                    placeholder="Max queue density"
+                    value={formData.maxAppointmentsPerDay}
+                    onChange={handleChange}
+                    className="w-full border border-slate-200 focus:border-teal-500 rounded-xl px-4 py-2 outline-none shadow-inner transition-all font-medium text-slate-800"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                    Domain Routing Classification
+                  </label>
+                  <select
+                    name="specialization"
+                    value={formData.specialization}
+                    onChange={handleChange}
+                    className="w-full border border-slate-200 focus:border-teal-500 rounded-xl px-4 py-2 outline-none bg-white font-medium text-slate-700"
+                    required
+                  >
+                    <option value="">Select Domain Specialization</option>
+                    {specializations.map((s) => (
+                      <option key={s._id} value={s._id}>
+                        {s.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1.5 md:col-span-2">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                    Anchor Hospital Address
+                  </label>
+                  <input
+                    type="text"
+                    name="hospitalAddress"
+                    placeholder="Full physical structural facilities footprint location description"
+                    value={formData.hospitalAddress}
+                    onChange={handleChange}
+                    className="w-full border border-slate-200 focus:border-teal-500 rounded-xl px-4 py-2 outline-none shadow-inner font-medium text-slate-800"
+                  />
+                </div>
               </div>
 
-              <textarea
-                name="description"
-                placeholder="Description"
-                value={formData.description}
-                onChange={handleChange}
-                className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-teal-400 outline-none"
-              />
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                  Public Biography Segment
+                </label>
+                <textarea
+                  name="description"
+                  placeholder="Summarize expert field focus parameters..."
+                  value={formData.description}
+                  onChange={handleChange}
+                  className="w-full border border-slate-200 focus:border-teal-500 rounded-xl px-4 py-2 outline-none h-20 shadow-inner font-medium text-slate-800"
+                />
+              </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 bg-slate-50 border border-slate-100 p-3 rounded-xl max-w-max">
                 <input
                   type="checkbox"
                   name="available"
+                  id="available-toggle"
                   checked={formData.available}
                   onChange={handleChange}
-                  className="h-5 w-5 text-teal-500 border-gray-300 rounded"
+                  className="h-4 w-4 accent-slate-900 border-slate-300 rounded-md cursor-pointer"
                 />
-                <label className="text-gray-700 font-medium">Available</label>
+                <label
+                  htmlFor="available-toggle"
+                  className="text-xs text-slate-700 font-bold uppercase tracking-wide cursor-pointer select-none"
+                >
+                  Immediate Stream Intake Available
+                </label>
               </div>
 
-              <div>
-                <label className="block text-gray-700 font-medium mb-2">
-                  Profile Image
-                </label>
-                <input
-                  type="file"
-                  name="profileImage"
-                  accept="image/*"
-                  onChange={handleChange}
-                  className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-teal-400 outline-none"
-                />
+              <div className="border-t border-slate-100 pt-4 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+                <div className="space-y-1.5 max-w-xs">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block">
+                    Directory Identity Portrait
+                  </label>
+                  <input
+                    type="file"
+                    name="profileImage"
+                    accept="image/*"
+                    onChange={handleChange}
+                    className="text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-slate-100 file:text-slate-800 hover:file:bg-slate-200 cursor-pointer"
+                  />
+                </div>
                 {imagePreview && (
                   <img
                     src={imagePreview}
-                    alt="Profile Preview"
-                    className="mt-2 w-32 h-32 rounded-full object-cover border shadow-lg"
+                    alt="Core Profile Preview"
+                    className="w-16 h-16 rounded-xl object-cover border border-slate-200 shadow-sm transition-all animate-fade-in"
                   />
                 )}
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-linear-to-r from-teal-500 to-cyan-500 text-white font-bold py-3 rounded-xl shadow-lg hover:scale-105 transition transform"
+                className="w-full bg-gradient-to-r from-cyan-600 to-teal-500 text-white font-bold py-3 rounded-xl shadow-xs hover:bg-teal-600 active:scale-[0.99] transition-all duration-200 mt-2"
               >
-                {editingId ? "Save Changes" : "Add Doctor"}
+                {editingId
+                  ? "Commit Spectrum Matrix Changes"
+                  : "Confirm Structural Registration Pipeline"}
               </button>
             </form>
           </div>

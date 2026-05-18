@@ -67,7 +67,7 @@ const RecordCard = ({ record, onView }) => {
           </span>
           <button
             onClick={() => onView(record)}
-            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-slate-900 text-white text-xs font-bold hover:bg-emerald-600 transition-all shadow-lg shadow-slate-200 hover:shadow-emerald-200 active:scale-95"
+            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-cyan-600 to-teal-500 text-white text-xs font-bold hover:bg-emerald-600 transition-all shadow-lg shadow-slate-200 hover:shadow-emerald-200 active:scale-95"
           >
             <Database size={14} className="text-emerald-400" />
             Open Record
