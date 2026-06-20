@@ -60,15 +60,24 @@ const adminSlice = createSlice({
         state.error = action.payload;
       })
 
+      .addCase(fetchAllDoctors.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(fetchAllDoctors.fulfilled, (state, action) => {
+        state.loading = false;
         state.doctors = action.payload || [];
+      })
+      .addCase(fetchAllDoctors.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       })
       .addCase(addDoctor.fulfilled, (state, action) => {
         if (action.payload) state.doctors.unshift(action.payload);
       })
       .addCase(updateDoctor.fulfilled, (state, action) => {
         const index = state.doctors.findIndex(
-          (d) => d._id === action.payload?._id
+          (d) => d._id === action.payload?._id,
         );
         if (index !== -1) state.doctors[index] = action.payload;
       })
@@ -105,7 +114,7 @@ const adminSlice = createSlice({
       .addCase(updateAppointmentStatusByAdmin.fulfilled, (state, action) => {
         const updatedAppt = action.payload;
         const index = state.appointments.findIndex(
-          (a) => a._id === updatedAppt._id
+          (a) => a._id === updatedAppt._id,
         );
         if (index !== -1) {
           state.appointments[index] = updatedAppt; // replace old appointment
@@ -117,7 +126,7 @@ const adminSlice = createSlice({
 
       .addCase(updateUserByAdmin.fulfilled, (state, action) => {
         const index = state.users.findIndex(
-          (u) => u._id === action.payload._id
+          (u) => u._id === action.payload._id,
         );
         if (index !== -1) {
           state.users[index] = action.payload;
