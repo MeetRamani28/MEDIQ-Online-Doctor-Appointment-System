@@ -7,7 +7,7 @@ import LoadingScreen from "./components/atoms/LoadingScreen";
 
 function App() {
   const dispatch = useDispatch();
-  const { loading, isAuthenticated } = useSelector((state) => state.auth);
+  const { loading, isAuthenticated, authChecking } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -16,6 +16,10 @@ function App() {
   }, [dispatch, isAuthenticated]);
 
   if (loading) {
+    return <LoadingScreen />;
+  }
+
+  if (authChecking) {
     return <LoadingScreen />;
   }
 

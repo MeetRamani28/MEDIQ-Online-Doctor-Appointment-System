@@ -11,6 +11,7 @@ const initialState = {
   user: null,
   isAuthenticated: false,
   loading: false,
+  authChecking: true,
   error: null,
   verifying: false,
   isDocVerified: false,
@@ -82,15 +83,15 @@ const authSlice = createSlice({
       })
 
       .addCase(fetchUserProfile.pending, (state) => {
-        state.loading = true;
+        state.authChecking = true;
       })
       .addCase(fetchUserProfile.fulfilled, (state, action) => {
-        state.loading = false;
+        state.authChecking = false;
         state.user = action.payload;
         state.isAuthenticated = true;
       })
       .addCase(fetchUserProfile.rejected, (state) => {
-        state.loading = false;
+        state.authChecking = false;
         state.user = null;
         state.isAuthenticated = false;
       });
