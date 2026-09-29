@@ -6,7 +6,20 @@ const API = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 const axiosInstance = axios.create({
   baseURL: API,
   withCredentials: true,
+  timeout: 20000, // 20s timeout to prevent infinite hanging during cold starts
 });
+
+/**
+ * Non-blocking heartbeat ping to wake up backend if sleeping
+ */
+export const pingBackendHealth = async () => {
+  try {
+    const healthUrl = API.replace(/\/api\/?$/, "") + "/health";
+    await axios.get(healthUrl, { timeout: 10000 });
+  } catch (err) {
+    console.log("Health ping attempt:", err.message);
+  }
+};
 
 export const registerUser = createAsyncThunk(
   "auth/register",

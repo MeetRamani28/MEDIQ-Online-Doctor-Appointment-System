@@ -40,4 +40,7 @@ appointmentSchema.index(
   { unique: true }
 );
 
+appointmentSchema.index({ user: 1, status: 1 });
+appointmentSchema.index({ doctor: 1, status: 1, appointmentDate: 1 });
+
 module.exports = mongoose.model("Appointment", appointmentSchema);

@@ -19,7 +19,8 @@ const getDoctorDashboard = async (req, res) => {
       appointmentDate: { $gte: todayStart },
     })
       .populate("user", "fullName email")
-      .sort({ appointmentDate: 1 });
+      .sort({ appointmentDate: 1 })
+      .lean();
 
     // 2️⃣ Convert "07:00 PM" → Date & filter upcoming
     const upcomingAppointments = pendingAppointments.filter((appt) => {
