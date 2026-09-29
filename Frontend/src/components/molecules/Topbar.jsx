@@ -12,7 +12,7 @@ const Topbar = ({ setSidebarOpen }) => {
 
   const handleLogout = async () => {
     await dispatch(logoutUser());
-    navigate("/login");
+    navigate("/auth");
   };
 
   const getInitials = (name) => {

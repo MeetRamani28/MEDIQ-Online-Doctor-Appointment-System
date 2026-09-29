@@ -44,6 +44,7 @@ const Routing = () => {
       <Routes>
         <Route path="/" element={<AuthPage />} />
         <Route path="/auth" element={<AuthPage />} />
+        <Route path="/login" element={<AuthPage />} />
 
         {/* Patient Routes */}
         <Route

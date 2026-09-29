@@ -26,7 +26,7 @@ const Navbar = () => {
   const handleLogout = async () => {
     await dispatch(logoutUser());
     setMenuOpen(false);
-    navigate("/login");
+    navigate("/auth");
   };
 
   if (!isAuthenticated) return null;
