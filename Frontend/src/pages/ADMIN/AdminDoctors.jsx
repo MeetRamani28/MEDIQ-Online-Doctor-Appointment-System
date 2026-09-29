@@ -135,7 +135,6 @@ const AdminDoctors = () => {
       };
       dispatch({ type: "admin/updateDoctorOptimistic", payload: tempDoctor });
       setIsModalOpen(false);
-      toast.info("Saving changes...");
       try {
         await dispatch(
           updateDoctor({ id: editingId, doctorData: data }),
@@ -165,7 +164,6 @@ const AdminDoctors = () => {
       };
       dispatch({ type: "admin/addDoctorOptimistic", payload: tempDoctor });
       setIsModalOpen(false);
-      toast.info("Saving new practitioner...");
       try {
         const result = await dispatch(addDoctor(data)).unwrap();
         dispatch({
@@ -182,12 +180,11 @@ const AdminDoctors = () => {
 
   const handleDelete = async (id) => {
     dispatch({ type: "admin/deleteDoctorOptimistic", payload: id });
-    toast.info("Removing dynamic record...");
     try {
       await dispatch(deleteDoctor(id)).unwrap();
-      toast.success("Doctor file removed from stream.");
+      toast.success("Doctor deleted successfully.");
     } catch {
-      toast.error("Failed to clear file node.");
+      toast.error("Failed to delete doctor.");
       dispatch(fetchAllDoctors());
     }
   };
@@ -196,9 +193,8 @@ const AdminDoctors = () => {
     dispatch({ type: "admin/toggleDoctorOptimistic", payload: id });
     try {
       await dispatch(toggleDoctorStatus(id)).unwrap();
-      toast.info("Routing access profile modified.");
     } catch {
-      toast.error("Failed to shift state configuration.");
+      toast.error("Failed to update status.");
       dispatch(fetchAllDoctors());
     }
   };

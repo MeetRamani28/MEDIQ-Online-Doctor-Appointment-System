@@ -58,7 +58,6 @@ const AdminUsers = () => {
   }, [users, totalPages, currentPage]);
 
   const handleDelete = (id) => {
-    toast.info("Removing user entry...");
     dispatch(deleteUserByAdmin(id))
       .unwrap()
       .then(() => toast.success("User account successfully removed"))
@@ -332,25 +331,23 @@ const UserModal = ({ user, onClose }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!form.fullName || !form.email)
-      return toast.error("Identity metrics (name and email) are mandatory");
+      return toast.error("Full name and email are required");
 
     if (isEdit) {
-      toast.info("Committing profile updates...");
       dispatch(updateUserByAdmin({ userId: user._id, data: form }))
         .unwrap()
         .then(() => {
-          toast.success("User configuration updated");
+          toast.success("User updated successfully");
           onClose();
         })
         .catch((err) => toast.error(err));
     } else {
       if (!form.password)
-        return toast.error("Routing password assignment required");
-      toast.info("Registering record block...");
+        return toast.error("Password is required");
       dispatch(addUserByAdmin(form))
         .unwrap()
         .then(() => {
-          toast.success("User setup workflow complete");
+          toast.success("User created successfully");
           onClose();
         })
         .catch((err) => toast.error(err));
