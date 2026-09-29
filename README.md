@@ -1,6 +1,6 @@
 # 🩺 MEDIQ — Enterprise Online Doctor Appointment System
 
-**MEDIQ** is a full-stack, production-grade MERN application designed to digitize healthcare coordination, doctor scheduling, patient medical record management, and administrative platform control.
+**MEDIQ** is a full-stack, production-grade MERN web application designed to digitize doctor appointment booking, clinical scheduling, patient medical record tracking, and system-level administrative platform control.
 
 [![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev/)
 [![Three.js](https://img.shields.io/badge/Three.js-WebGL-black?logo=three.js)](https://threejs.org/)
@@ -13,21 +13,21 @@
 
 ## 🚀 Key Features & Highlights
 
-### 🎨 **Frontend Innovation**
-- **WebGL 3D Interactive Canvas**: Built with Three.js rendering dynamic 3D medical particle spheres with mouse-reactive camera parallax.
-- **Enterprise Split Auth Experience**: Framer Motion glassmorphism UI with smooth spring transitions, password visibility toggle, and instant license pre-verification feedback.
-- **⚡ 1-Click Demo Auto-Fill**: Embedded demo buttons (`Patient` | `Doctor` | `Admin`) for instant portfolio review without manual credential typing.
-- **Route-Level Lazy Loading**: React `lazy()` and `<Suspense>` route splitting reduces initial bundle size to **~30 kB per-route chunk**.
-- **Dynamic Heartbeat Loading Screen**: Custom Framer Motion heartbeat loader with Render cold-start status notices.
-- **Responsive 404 Not Found Page**: Fully animated glassmorphism fallback view.
+### 🎨 **Frontend Architecture & UI**
+- **Full-Screen Locked Auth Layout**: Edge-to-edge 100vh viewport design with locked page scrolling, inner form container scroll, and unified MEDIQ primary brand blue (`#0052CC`) theme.
+- **WebGL 3D Interactive Canvas**: Built with Three.js rendering dynamic 3D medical particle spheres with mouse-reactive camera parallax in the auth hero panel.
+- **Route-Level Code Splitting**: React `lazy()` and `<Suspense>` route splitting reduces initial JS payload down to **~30 kB per-route chunk**.
+- **Dynamic Heartbeat Loading Screen**: Framer Motion heartbeat loader with automatic Render cold-start status notifications.
+- **Responsive 404 Not Found Page**: Glassmorphic 404 error page with animated badge graphics and instant navigation controls.
+- **Clean Toast Notifications**: Streamlined, non-intrusive notification system firing exclusively on action completion and errors.
 
 ### ⚙️ **Backend & Infrastructure**
 - **Automated Keep-Alive Worker Daemon**: Self-pinging HTTP heartbeat worker running every 12 minutes to eliminate Render free-tier 15-minute sleep timeouts.
 - **AI Tesseract OCR License Verification**: Automatic medical license document parsing & pre-verification.
 - **Role-Based Access Control (RBAC)**: Enforced middleware security for `PATIENT`, `DOCTOR`, and `ADMIN` roles.
 - **Database Query Acceleration**: Mongoose `.lean()` execution and compound index strategy (`{ doctor: 1, appointmentDate: 1, appointmentTime: 1 }`).
-- **HTTP Request Logger & Error Handler**: Structured colored request logging and centralized error handling (Mongoose Validation, E11000 Duplicate Key, JWT, and Multer errors).
-- **Auto Demo Accounts Seeder**: Automatic seeding of default demo accounts upon database connection.
+- **HTTP Request Logger & Error Handler**: Structured request logging with status indicators and centralized error handling (Mongoose Validation, E11000 Duplicate Key, JWT, and Multer errors).
+- **Auto Demo Accounts Seeder**: Automatic seeding of default demo accounts upon MongoDB connection.
 
 ---
 
@@ -38,8 +38,6 @@
 | **Patient** | `patient@mediq.care` | `Password123!` |
 | **Doctor** | `doctor@mediq.care` | `Password123!` |
 | **Admin** | `admin@mediq.care` | `Password123!` |
-
-*(You can also use the 1-Click Demo Fill buttons on the login screen to automatically log in!)*
 
 ---
 
@@ -62,7 +60,7 @@ MEDIQ/
     │   ├── features/        # Redux Toolkit Slices & Async Thunks
     │   ├── layouts/         # AdminLayout, DoctorLayout, PatientLayout
     │   ├── pages/           # Role-based pages (ADMIN, DOCTOR, PATIENT, AuthPage, NotFound)
-    │   ├── routes/          # Lazy-loaded Routing definitions with Suspense
+    │   ├── routes/          # Lazy-loaded Routing definitions with Suspense & /login alias
     │   └── store/           # Redux Store configuration
     └── vite.config.js       # Rollup vendor bundle splitting
 ```
